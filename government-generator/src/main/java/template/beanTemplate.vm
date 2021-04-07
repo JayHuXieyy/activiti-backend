@@ -1,0 +1,104 @@
+package ${modelPackage};
+import javax.validation.constraints.NotBlank;
+import io.swagger.annotations.ApiModelProperty;
+import com.huafagroup.common.core.domain.BaseEntity;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import javax.validation.constraints.NotNull;
+import javax.persistence.*;
+#if (${hasDate})
+import java.util.Date;
+#end
+
+#if (${hasBigdecimal})
+
+import java.math.BigDecimal;
+#end
+
+/**
+* <p>
+    *
+    *${remark}
+    *
+    * </p>
+*
+* @author ${author}
+* @date ${dateTime}
+* @version
+*/
+@TableName(value = "${tableName}")
+public class ${beanName} extends BaseEntity {
+
+private static final long serialVersionUID = 1L;
+
+#foreach ($item in $columns)
+    #if (${primaryKeys.contains($item.column)})
+        #if (${item.remark} && ${item.remark}!='' )
+        /**
+        * ${item.remark}
+        */
+        #end
+    @ApiModelProperty(value = "主键Id")
+    @TableId
+        #*#if ( ${item.type} != "String" )
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        #end
+        @Column(name = "${item.column}")
+        #if ( ${item.type} == "String" )
+        @Length(max=${item.maxLength},message="${item.remark} 长度不能超过${item.maxLength}")
+        #end*#
+    private ${item.type} ${item.lowerProperty};
+    #end
+#end
+
+#foreach ($item in $columns)
+    #if (!${baseColumns.contains($item.lowerProperty)})
+        #if (${item.remark} && ${item.remark}!='' )
+        /**
+        * ${item.remark}
+        */
+        #end
+        #if (${item.remark} && ${item.remark}!='' )
+        @ApiModelProperty(value = "${item.remark}"#if(!${item.allowNull}), required = true#end)
+        #end
+        #*#if ( ${item.type} == "String" )
+        @Length(max=${item.maxLength},message="${item.remark} 长度不能超过${item.maxLength}")
+        #end*#
+        #if ( ${item.allowNull} == false )
+            #if ( ${item.type} == "String" )
+            @NotBlank(message = "${item.column} not allow null")
+            #else
+            @NotNull(message = "${item.column} not allow null")
+            #end
+        #end
+        #*@Column(name = "${item.column}")*#
+    private ${item.type} ${item.lowerProperty};
+    #end
+#end
+
+#foreach ($item in $columns)
+    #if (${primaryKeys.contains($item.column)})
+    public ${item.type} get${item.property}() {
+    return ${item.lowerProperty};
+    }
+
+    public void set${item.property}(${item.type} ${item.lowerProperty}) {
+    this.${item.lowerProperty} = ${item.lowerProperty};
+    }
+    #end
+#end
+
+#foreach ($item in $columns)
+    #if (!${baseColumns.contains($item.lowerProperty)})
+
+    public ${item.type} get${item.property}() {
+    return ${item.lowerProperty};
+    }
+
+    public void set${item.property}(${item.type} ${item.lowerProperty}) {
+    this.${item.lowerProperty} = ${item.lowerProperty};
+    }
+
+    #end
+#end
+}

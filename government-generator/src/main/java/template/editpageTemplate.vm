@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>${remark}编辑页面</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/root/layui/css/layui.css">
+</head>
+
+<body>
+<!--<div class="weadmin-body">-->
+<form class="layui-form">
+    #set($entity='${entity.')
+    #set($entity2='entity.')
+
+    #set($value= '${optionItem.value}')
+    #set($text= '${optionItem.text}')
+    #set($last= '>selected</#if>')
+    ##    #set($optionItem1="<\#if dict.value == entity.")
+
+    #set($createDate='${entity.createDate?string("yyyy-MM-dd HH:mm:ss")}')
+    #set($updateDate='${entity.updateDate?string("yyyy-MM-dd HH:mm:ss")}')
+
+    #foreach($item in $columns)
+        #if (!${baseColumns.contains($item.lowerProperty)})
+        <div class="layui-form-item">
+            <label for="${item.lowerProperty}" class="layui-form-label">
+                ${item.remark}
+            </label>
+            #if ( ${item.hasDictItem}  ==true )
+                <div class="layui-input-inline">
+                    <select name="${item.lowerProperty}" lay-filter="${item.lowerProperty}"
+                            value="$entity${item.lowerProperty}}">
+                        <option value=""></option>
+                        #*   <#list ${item.lowerProperty} as optionItem>
+                               <option value="$value" $optionItem1${item.lowerProperty} $last >$text</option>
+                           </#list>*#
+                        <@erp_dict type="${item.column}">
+                        <#list dictList as dict>
+                        <option value="${dict.value}" $optionItem1${item.lowerProperty} $last>${dict.text}</option>
+                    </#list>
+                </
+                @erp_dict>
+                </select>
+            </div>
+            #elseif( ${item.jdbcType}  =='DATE')
+                <div class="layui-input-inline">
+                    <input type="text" id="${item.lowerProperty}" name="${item.lowerProperty}"
+                           value="$entity${item.lowerProperty}?string(" yyyy-MM-dd")}"
+                    autocomplete="off" class="layui-input" placeholder="yyyy-MM-dd HH:mm:ss"
+                    lay-verify="${item.lowerProperty}verify">
+                </div>
+            #elseif(${item.jdbcType}  =='DATETIME')
+                <div class="layui-input-inline">
+                    <input type="text" id="${item.lowerProperty}" name="${item.lowerProperty}"
+                           value="$entity${item.lowerProperty}?string(" yyyy-MM-dd HH:mm:ss")}"
+                    autocomplete="off" class="layui-input" placeholder="yyyy-MM-dd HH:mm:ss"
+                    lay-verify="${item.lowerProperty}verify">
+                </div>
+            #elseif( ${item.jdbcType}  =='BIT')
+                <div class="layui-input-inline">
+                    <\#if ($entity2${item.lowerProperty})== false>
+                    <input type="checkbox" name="${item.lowerProperty}" lay-skin="switch" lay-text="ON|OFF">
+                    <\#else>
+                    <input type="checkbox" name="${item.lowerProperty}" checked="" lay-skin="switch" lay-text="ON|OFF">
+                </
+                \#if>
+                </div>
+            #elseif(${item.allowNull}==false )
+                <div class="layui-input-inline">
+                    <input type="text" value="$entity${item.lowerProperty}}" name="${item.lowerProperty}"
+                           autocomplete="off"
+                           class="layui-input layui-input-primary layui-input-sm"
+                           lay-verify="${item.lowerProperty}verify">
+                </div>
+                <h1 style="color:red">*</h1>
+            #else
+                <div class="layui-input-inline">
+                    <input type="text" value="$entity${item.lowerProperty}}" name="${item.lowerProperty}"
+                           autocomplete="off"
+                           class="layui-input layui-input-primary layui-input-sm"
+                           lay-verify="${item.lowerProperty}verify">
+                </div>
+            #end
+            </div>
+        #end
+    #end
+
+    <div class="layui-form-item layui-hide">
+        <label for="createDate" class="layui-form-label">创建时间</label>
+        <div class="layui-input-inline">
+            <input type="text" id="createDate" name="createDate" value="$createDate" autocomplete="off"
+                   class="layui-input" placeholder="yyyy-MM-dd HH:mm:ss" lay-verify="updateDateverify">
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-hide">
+        <label for="createBy" class="layui-form-label">
+            创建者
+            <!--  <span class="we-red">*</span>session-->
+        </label>
+        <div class="layui-input-inline">
+            <input type="text" id="createBy" name="createBy" value="${entity.createBy}" autocomplete="off"
+                   class="layui-input" lay-verify="createByverify">
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-hide">
+        <label for="updateDate" class="layui-form-label">修改时间</label>
+        <div class="layui-input-inline">
+            <input type="text" id="updateDate" name="updateDate" value="$updateDate" autocomplete="off"
+                   class="layui-input" placeholder="yyyy-MM-dd HH:mm:ss" lay-verify="updateDateverify">
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-hide">
+        <label for="updateBy" class="layui-form-label">修改者 </label>
+        <div class="layui-input-inline">
+            <input type="text" id="updateBy" value="${entity.updateBy}" name="updateBy" autocomplete="off"
+                   class="layui-input" lay-verify="updateByverify">
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-hide">
+        <label for="updateBy" class="layui-form-label">主键 </label>
+        <div class="layui-input-inline">
+            <input type="text" value="${entity.id}" name="id">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-filter="add" lay-submit="">确定</button>
+            <button class="layui-btn layui-btn-primary" type="reset">重置</button>
+        </div>
+    </div>
+</form>
+<!--</div>-->
+<script src="/root/layui/layui.js" charset="utf-8"></script>
+<script src="/root/js/server-api.js" charset="utf-8"></script>
+<script charset="utf-8">
+
+
+    layui.use(['form', 'jquery', 'util', 'layer', 'table', 'laydate'], function () {
+        var form = layui.form,
+                $ = layui.jquery,
+                util = layui.util,
+                layer = layui.layer;
+        table = layui.table;
+        laydate = layui.laydate;
+        laydate.render({
+            elem: '#createDate',
+            type: 'datetime'
+        });
+        laydate.render({
+            elem: '#updateDate',
+            type: 'datetime'
+        });
+
+        #foreach($item in $columns)
+            #if( ${item.jdbcType}  =='DATETIME')
+                laydate.render({
+                    elem: '#${item.lowerProperty}',
+                    type: 'datetime'
+                });
+            #end
+            #if( ${item.jdbcType}  =='DATE')
+                laydate.render({
+                    elem: '#${item.lowerProperty}',
+                    type: 'datetime'
+                });
+            #end
+        #end
+        Callback = function (result, obj) {
+            if (result.code == 200) {
+                layer.open({
+                    type: 1
+                    , content: '<div style="padding: 20px 100px;">更新成功！</div>'
+                    , btn: '关闭'
+                    , btnAlign: 'c' //按钮居中
+                    , shade: 0 //不显示遮罩
+                    , yes: function () {
+                        layer.closeAll();
+                        window.parent.layui.table.reload('${lowerBeanName}_table');
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    }
+                });
+            } else {
+                layer.open({
+                    type: 1
+                    , content: '<div style="padding: 20px 100px;">' + result.message + '更新失败！</div>'
+                    , btn: '关闭'
+                    , btnAlign: 'c' //按钮居中
+                    , shade: 0 //不显示遮罩
+                    , yes: function () {
+                        layer.closeAll();
+
+                    }
+                });
+            }
+        };
+
+        //添加前端验证
+        form.verify({
+            verify: [, '']
+            #foreach($item in $columns)
+                #if (  ${item.allowNull} == false&&${item.type} == "String" )
+                    ,
+                        ${item.lowerProperty}verify: [/^.{1,${item.maxLength}}$/, '${item.remark} 不能为空并且长度不能超过${item.maxLength}']
+                #elseif( ${item.allowNull} == false&&!(${item.type} == "String"))
+                    #if(${item.jdbcType} == "DATE"||${item.jdbcType} == "DATETIME")
+                        ,
+                            ${item.lowerProperty}verify: [/^.{1,20}$/, '${item.remark} 不能为空']
+                    #else
+                        ,
+                            ${item.lowerProperty}verify: [/^.{1,60}$/, '${item.remark} 不能为空']
+                    #end
+                #elseif( ${item.allowNull} == true&&${item.type} == "String")
+                    ,
+                        ${item.lowerProperty}verify: [/^.{0,${item.maxLength}}$/, '${item.remark}  长度不能超过${item.maxLength}']
+                #end
+            #end
+        });
+
+
+        //监听提交
+        form.on('submit(add)', function (data) {
+            var index = parent.layer.getFrameIndex(window.name); //zhixian
+            var f = data.field;
+            var param = {
+                #foreach($item in $columns)
+                    #if($velocityCount == 1)
+                        #if(${item.jdbcType}  =='BIT')
+                                ${item.lowerProperty}: f.${item.lowerProperty} == undefined ? 0 : 1
+                        #else
+                                ${item.lowerProperty}: f.${item.lowerProperty}
+                        #end
+                    #else
+                        #if(${item.jdbcType}  =='BIT')
+                            , ${item.lowerProperty}: f.${item.lowerProperty} == undefined ? 0 : 1
+                        #else
+                            , ${item.lowerProperty}: f.${item.lowerProperty}
+                        #end
+                    #end
+                #end
+            };
+            var updateUrl;
+            #if ( ${modulePrefix}== true )
+                updateUrl = '/${module}/${lowerBeanName}/update';
+            #else
+                updateUrl = '/${lowerBeanName}/update';
+            #end
+            api(param, 'POST', updateUrl, Callback, '');
+
+            return false;
+
+        });
+
+    });
+
+    function UrlSearch() {
+        var name, value;
+        var str = location.href; //取得整个地址栏
+        var rep = new RegExp("%20", "g");
+        str = str.replace(rep, ' ');
+        var num = str.indexOf("?")
+        str = str.substr(num + 1); //取得所有参数   stringvar.substr(start [, length ]
+        var arr = str.split("&"); //各个参数放到数组里
+        for (var i = 0; i < arr.length; i++) {
+            num = arr[i].indexOf("=");
+            if (num > 0) {
+                name = arr[i].substring(0, num);
+                value = arr[i].substr(num + 1);
+                this[name] = value;
+            }
+        }
+    }
+
+</script>
+</body>
+</html>

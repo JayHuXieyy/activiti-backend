@@ -1,0 +1,125 @@
+# 数据源配置
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    druid:
+      # 主库数据源
+      master:
+        url: jdbc:mysql://192.168.1.109:3306/g2c_call_system?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: root
+        password: 123456
+      # 从库数据源
+      slave:
+        # 从数据源开关/默认关闭
+        enabled: false
+        url:
+        username:
+        password:
+      # 初始连接数
+      initialSize: 5
+      # 最小连接池数量
+      minIdle: 10
+      # 最大连接池数量
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      # 配置一个连接在池中最大生存的时间，单位是毫秒
+      maxEvictableIdleTimeMillis: 900000
+      # 配置检测连接是否有效
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      webStatFilter:
+        enabled: true
+      statViewServlet:
+        enabled: true
+        # 设置白名单，不填则允许所有访问
+        allow:
+        url-pattern: /druid/*
+        # 控制台管理用户名和密码
+        login-username:
+        login-password:
+      filter:
+        stat:
+          enabled: true
+          # 慢SQL记录
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+  # redis 配置
+  redis:
+    redisson:
+      # 配置文件
+      file: classpath:redisson-single.yml
+  main:
+    allow-bean-definition-overriding: true
+# token配置
+token:
+  # 令牌自定义标识
+  header: Authorization
+  # 令牌密钥
+  secret: abcdefghijklmnopqrstuvwxyz
+  # 令牌有效期（默认30分钟）
+  expireTime: 30
+  # 叫号机安卓端令牌有效期(默认18个小时)
+  callExpireTime: 1080
+
+
+
+#域名配置
+#http://console.gov.paasdev.huafagroup.com/api
+#http://172.16.240.36:8088
+#http://172.16.90.96:8088
+domain:
+  name: http://console.gov.paasdev.huafagroup.com/api
+
+
+#微信H5授权ID
+h5WxAppId: wxfae8a371fd3501cd
+
+#微信H5授权密匙
+h5WxAppSecret: d8b3922aa7d8ccc5796283ea2c7dccbe
+
+wxTemplate:
+  call: aagYSQbmXSJDilevtkd59t3KV2ttDYx91NC3mpKi2dQ
+  pass: cvikdAPa0BoTu7mySK5gXlPYqEESwAXwXVV_CcQY6Ps
+  appointment: o00yyP3qFIWFudoviXLkVNlPuuB9oLg7gtH8BOsw1o8
+wxNotice:
+  qr_code_expire_seconds: 86400
+  qr_code_action_name: QR_STR_SCENE
+
+#获取第三方数据接口
+call:
+  gds:
+    url: http://apis.gdzwfw.gov.cn/ebus/sxgl/gdsqlk/rest/api/getLastAuditItem
+    passid: mmfwxt
+    token: 6ZSzusx2h7Ew2L7vKvgLja0gq5wpzkUy
+
+current: gds
+
+#百度sdk
+baidu:
+  sdk:
+    appid: 23629370
+    apikey: XXXhtn2ONO9aKmu3rWGkUdKl
+    secretkey: ocbByyPBzwarFxcVzWB3wLiBB1dvAvSk
+
+#短信应用id与密码
+sms:
+    appid: xkj-gov-affair-test
+    appSecret: xkjgovaffair123
+    url: http://api.paasdev.huafagroup.com
+    single:
+      servicePath: /sms-service/sms/single/send
+    template:
+      servicePath: /sms-service/template/singleSms/send
+sms.current: single

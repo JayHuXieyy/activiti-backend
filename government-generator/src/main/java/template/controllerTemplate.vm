@@ -1,0 +1,114 @@
+package ${controllerPackage};
+
+
+import ${modelPackage}.${beanName};
+import ${mapperPackage}.${beanName}Mapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.huafagroup.core.exception.ExceptionEnum;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.stereotype.Controller;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.huafagroup.core.util.JsonUtil;
+import com.huafagroup.core.util.ResultBean;
+import org.springframework.validation.annotation.Validated;
+/**
+* <p>
+    * </p>
+*
+* @author ${author}
+* @date ${dateTime}
+* @version
+*/
+@Controller
+#set($apiModuleName = $tableName.replace("_", "-"))
+@RequestMapping(value = "/${apiModuleName}")
+public class ${beanName}Controller {
+
+Logger logger = LoggerFactory.getLogger(this.getClass());
+@Autowired
+private HttpServletRequest request;
+@Autowired
+private HttpServletResponse response;
+@Autowired
+private ${beanName}Mapper mapper;
+
+
+@RequestMapping(value = "/get",method = RequestMethod.GET)
+@ResponseBody
+public ResultBean<${beanName}> get(String id){
+${beanName} item=  mapper.selectByPrimaryKey(id);
+if(item!=null){
+return new ResultBean<${beanName}>(item);
+}
+else {
+return new ResultBean<${beanName}>(ExceptionEnum.RESOURCE_NOT_FOUND,"找不到该记录",null);
+}
+}
+
+
+@RequestMapping(value = "/getlist",method = RequestMethod.GET)
+@ResponseBody
+public ResultBean
+<List<${beanName}>> getList(){
+List<${beanName}> list=  mapper.selectAll();
+ResultBean
+<List<${beanName}>> resultBean=new ResultBean
+<List<${beanName}>>(list);
+return  resultBean;
+}
+
+@RequestMapping(value = "/create",method = RequestMethod.POST)
+@ResponseBody
+public ResultBean
+<String> create(@RequestBody @Validated ${beanName} item){
+    int result= mapper.insertSelective(item);
+    logger.info("create ${beanName} success,record,{}"+ JsonUtil.bean2Json(item));
+    ResultBean
+    <String> resultBean=new ResultBean
+        <String>("");
+            return resultBean;
+            }
+
+            @RequestMapping(value = "/update",method = RequestMethod.POST)
+            @ResponseBody
+            public ResultBean
+            <String> update(@RequestBody @Validated ${beanName} item){
+                int result= mapper.updateByPrimaryKeySelective(item);
+                logger.info("update ${beanName} success,record,{}"+ JsonUtil.bean2Json(item));
+                ResultBean
+                <String> resultBean=new ResultBean
+                    <String>("");
+                        return resultBean;
+                        }
+
+                        @RequestMapping(value = "/deleteByID",method = RequestMethod.POST)
+                        @ResponseBody
+                        public ResultBean
+                        <Integer> delete(String id){
+                            int result= mapper.deleteByPrimaryKey(id);
+                            logger.info("delete ${beanName} success,record id,{}"+ id);
+                            ResultBean
+                            <Integer> resultBean=new ResultBean
+                                <Integer>(result);
+                                    return resultBean;
+                                    }
+
+                                    @RequestMapping(value = "/delete",method = RequestMethod.POST)
+                                    @ResponseBody
+                                    public ResultBean
+                                    <Integer> delete(@RequestBody ${beanName} item){
+                                        int result= mapper.delete(item);
+                                        ResultBean
+                                        <Integer> resultBean=new ResultBean
+                                            <Integer>(result);
+                                                return resultBean;
+                                                }
+
+                                                }
