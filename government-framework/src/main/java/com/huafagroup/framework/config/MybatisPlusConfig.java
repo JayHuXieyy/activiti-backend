@@ -1,4 +1,4 @@
-package com.huafagroup.system.config;
+package com.huafagroup.framework.config;
 
 import com.baomidou.mybatisplus.core.injector.DefaultSqlInjector;
 import com.baomidou.mybatisplus.core.injector.ISqlInjector;
