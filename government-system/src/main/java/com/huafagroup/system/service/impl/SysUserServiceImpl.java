@@ -1,16 +1,23 @@
 package com.huafagroup.system.service.impl;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.huafagroup.common.constant.Constants;
 
+import com.huafagroup.common.utils.QueryDto;
+import com.huafagroup.common.utils.SearchQueryEnum;
 import com.huafagroup.common.utils.http.HttpUtils;
+import com.huafagroup.system.domain.dto.SysUserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,6 +76,64 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @DataScope(deptAlias = "d", userAlias = "u")
     public List<SysUser> selectUserList(SysUser user) {
         return userMapper.selectUserList(user);
+    }
+
+    @Override
+    public Page<SysUserDto> findPageList(QueryDto queryDto) throws ParseException {
+        Page<SysUserDto> page = new Page<>();
+        LambdaQueryWrapper<SysUser> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.select().eq(SysUser::getDelFlag, 0);
+
+        // 用户名称查询
+        if (queryDto.getSearchValue().get(SearchQueryEnum.USER_NAME.getValue()) != null) {
+            lambdaQueryWrapper.eq(SysUser::getUserName, Long.parseLong(String.valueOf(queryDto.getSearchValue().get(SearchQueryEnum.USER_NAME.getValue()))));
+        }
+        // 部门查询
+        if (queryDto.getSearchValue().get(SearchQueryEnum.DEPT.getValue()) != null) {
+            lambdaQueryWrapper.eq(SysUser::getDeptId, Long.parseLong(String.valueOf(queryDto.getSearchValue().get(SearchQueryEnum.DEPT.getValue()))));
+        }
+        // 用户状态查询
+        if (queryDto.getSearchValue().get(SearchQueryEnum.STATUS.getValue()) != null) {
+            lambdaQueryWrapper.eq(SysUser::getStatus, Integer.valueOf(String.valueOf(queryDto.getSearchValue().get(SearchQueryEnum.STATUS.getValue()))));
+        }
+        // 用户角色查询
+        if (queryDto.getSearchValue().get(SearchQueryEnum.ROLE_ID.getValue()) != null) {
+            LambdaQueryWrapper<SysUserRole> userRoleQuery=Wrappers.lambdaQuery();
+            userRoleQuery.eq(SysUserRole::getRoleId,Long.parseLong(String.valueOf(queryDto.getSearchValue().get(SearchQueryEnum.ROLE_ID.getValue()))));
+            List<SysUserRole> userRoles=userRoleMapper.selectList(userRoleQuery);
+            List<Long> userIds=userRoles.stream().map(SysUserRole::getUserId).collect(Collectors.toList());
+            lambdaQueryWrapper.in(SysUser::getUserId,userIds);
+        }
+
+        Page<SysUser> userPage = userMapper.selectPage(new Page<>(queryDto.getPageNo(), queryDto.getPageSize()), lambdaQueryWrapper);
+        if (userPage != null) {
+            BeanUtils.copyProperties(userPage, page);
+            List<SysUserDto> list = new ArrayList<>();
+            List<SysUser> records = userPage.getRecords();
+            if (records.size() > 0) {
+                List<Integer> roleIds;
+                List<SysRole> roles;
+                LambdaQueryWrapper<SysRole> roleQuery=Wrappers.lambdaQuery();
+                for(SysUser item:records){
+                    SysUserDto dto = new SysUserDto();
+                    BeanUtils.copyProperties(item, dto);
+                    //获取角色id
+                    roleIds=roleMapper.selectRoleListByUserId(item.getUserId());
+                    //获取角色
+                    if(roleIds.size()>0){
+                        roleQuery.in(SysRole::getRoleId,roleIds);
+                        roles=roleMapper.selectList(roleQuery);
+                        dto.setRoleList(roles);
+                    }
+                    list.add(dto);
+                    roleQuery.clear();
+                }
+            }
+            page.setRecords(list);
+        }
+        return page;
+
+
     }
 
     /**

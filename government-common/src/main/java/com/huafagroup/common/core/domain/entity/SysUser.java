@@ -38,6 +38,12 @@ public class SysUser extends BaseEntity {
     private Long deptId;
 
     /**
+     * 党组织id
+     */
+    @Excel(name = "党组织id", type = Type.IMPORT)
+    private Long organizationId;
+
+    /**
      * 用户账号
      */
     @Excel(name = "登录名称")
@@ -326,6 +332,14 @@ public class SysUser extends BaseEntity {
 
     public void setPostIds(Long[] postIds) {
         this.postIds = postIds;
+    }
+
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
     }
 
     @Override

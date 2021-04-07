@@ -32,7 +32,8 @@ public enum SearchQueryEnum {
     FLOOR("floor", "楼层"),
     AREA("area", "区域"),
     TITLE_NAME("titleName", "新闻动态标题名称"),
-    LIST_TYPE("listType","叫号列表类型");
+    USER_NAME("userName", "用户名称"),
+    ROLE_ID("roleId", "角色id");
     ;
     private final String value;
     private final String desc;

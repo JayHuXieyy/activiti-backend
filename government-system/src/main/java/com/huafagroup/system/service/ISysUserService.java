@@ -1,9 +1,13 @@
 package com.huafagroup.system.service;
 
+import java.text.ParseException;
 import java.util.List;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.huafagroup.common.core.domain.entity.SysUser;
+import com.huafagroup.common.utils.QueryDto;
+import com.huafagroup.system.domain.dto.SysUserDto;
 
 /**
  * 用户 业务层
@@ -18,6 +22,14 @@ public interface ISysUserService extends IService<SysUser> {
      * @return 用户信息集合信息
      */
     public List<SysUser> selectUserList(SysUser user);
+
+
+    /**
+     * 管理后台查询列表
+     *
+     * @return 楼层列表
+     */
+    Page<SysUserDto> findPageList(QueryDto queryDto) throws ParseException;
 
     /**
      * 通过用户名查询用户

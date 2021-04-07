@@ -3,6 +3,7 @@ package com.huafagroup.common.core.domain.entity;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.huafagroup.common.annotation.Excel;
@@ -50,11 +51,13 @@ public class SysRole extends BaseEntity {
     /**
      * 菜单树选择项是否关联显示（ 0：父子不互相关联显示 1：父子互相关联显示）
      */
+    @TableField(exist = false)
     private boolean menuCheckStrictly;
 
     /**
      * 部门树选择项是否关联显示（0：父子不互相关联显示 1：父子互相关联显示 ）
      */
+    @TableField(exist = false)
     private boolean deptCheckStrictly;
 
     /**
@@ -71,16 +74,19 @@ public class SysRole extends BaseEntity {
     /**
      * 用户是否存在此角色标识 默认不存在
      */
+    @TableField(exist = false)
     private boolean flag = false;
 
     /**
      * 菜单组
      */
+    @TableField(exist = false)
     private Long[] menuIds;
 
     /**
      * 部门组（数据权限）
      */
+    @TableField(exist = false)
     private Long[] deptIds;
 
     public SysRole() {
