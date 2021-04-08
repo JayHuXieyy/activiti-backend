@@ -3,6 +3,8 @@ package com.huafagroup.web.controller.activiti;
 import com.huafagroup.activiti.entity.CatalogTable;
 import com.huafagroup.activiti.service.CatalogTableService;
 import com.huafagroup.common.core.domain.AjaxResult;
+import com.huafagroup.common.utils.QueryDto;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
  * @author 13738
  * @date 2021-04-07 18:16:44
  */
+@Api(tags = "目录接口")
 @RestController
-@RequestMapping(value = "/call/catalog-table")
+@RequestMapping(value = "/activiti/catalog-table")
 public class CatalogTableController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -39,6 +42,12 @@ public class CatalogTableController {
         } else {
             return AjaxResult.error("找不到该记录");
         }
+    }
+
+    @ApiOperation(value = "管理后台查询列表")
+    @RequestMapping(value = "/findpagelist", method = RequestMethod.POST)
+    public AjaxResult findPageList(@RequestBody @Validated QueryDto queryDto) throws Exception {
+        return AjaxResult.success(service.findPageList(queryDto));
     }
 
 

@@ -2,7 +2,12 @@ package com.huafagroup.activiti.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.huafagroup.activiti.domain.dto.OrganizationNotCountryDto;
 import com.huafagroup.activiti.entity.OrganizationTable;
+import com.huafagroup.common.utils.QueryDto;
+
+import java.text.ParseException;
+import java.util.List;
 
 /**
 * <p>
@@ -15,4 +20,14 @@ import com.huafagroup.activiti.entity.OrganizationTable;
 
 public interface OrganizationTableService extends IService<OrganizationTable>{
 
+    /**
+     * 管理后台查询列表
+     *
+     * @return 楼层列表
+     */
+    List<OrganizationTable> findPageList(QueryDto queryDto) throws ParseException;
+
+    Boolean delete(String id);
+
+    List<OrganizationNotCountryDto> getlistNotcounty();
 }

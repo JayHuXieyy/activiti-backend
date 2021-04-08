@@ -32,7 +32,7 @@ public class CatalogTable extends BaseEntity {
     @ApiModelProperty(value = "模块id")
 
 
-    private Long module;
+    private Long moduleId;
     /**
      * 备注
      */
@@ -62,12 +62,15 @@ public class CatalogTable extends BaseEntity {
 
     private String title;
     /**
-     * 目录类型，0动态目录，1镇，2村，3村镇共用
+     * 目录类型，1镇，2村，3村镇共用
      */
-    @ApiModelProperty(value = "目录类型，0动态目录，1镇，2村，3村镇共用")
-
-
-    private Boolean type;
+    @ApiModelProperty(value = "目录类型，1镇，2村，3村镇共用")
+    private Integer type;
+    /**
+     * 页面类型，0动态目录,1内容目录
+     */
+    @ApiModelProperty(value = "页面类型，0动态目录,1内容目录")
+    private Integer pageType;
     /**
      * 父目录id
      */
@@ -92,12 +95,12 @@ public class CatalogTable extends BaseEntity {
     }
 
 
-    public Long getModule() {
-        return module;
+    public Long getModuleId() {
+        return moduleId;
     }
 
-    public void setModule(Long module) {
-        this.module = module;
+    public void setModuleId(Long moduleId) {
+        this.moduleId = moduleId;
     }
 
 
@@ -137,14 +140,21 @@ public class CatalogTable extends BaseEntity {
     }
 
 
-    public Boolean getType() {
+    public Integer getType() {
         return type;
     }
 
-    public void setType(Boolean type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 
+    public Integer getPageType() {
+        return pageType;
+    }
+
+    public void setPageType(Integer pageType) {
+        this.pageType = pageType;
+    }
 
     public Long getParentId() {
         return parentId;

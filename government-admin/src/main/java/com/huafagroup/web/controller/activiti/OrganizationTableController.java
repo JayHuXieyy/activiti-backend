@@ -3,6 +3,8 @@ package com.huafagroup.web.controller.activiti;
 import com.huafagroup.activiti.entity.OrganizationTable;
 import com.huafagroup.activiti.service.OrganizationTableService;
 import com.huafagroup.common.core.domain.AjaxResult;
+import com.huafagroup.common.utils.QueryDto;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
  * @author 13738
  * @date 2021-04-07 18:17:08
  */
+@Api(tags = "党组织接口")
 @RestController
-@RequestMapping(value = "/call/organization-table")
+@RequestMapping(value = "/activiti/organization-table")
 public class OrganizationTableController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -46,6 +49,18 @@ public class OrganizationTableController {
     @RequestMapping(value = "/getlist", method = RequestMethod.GET)
     public AjaxResult getList() {
         return AjaxResult.success(service.list());
+    }
+
+    @ApiOperation(value = "管理后台查询列表")
+    @RequestMapping(value = "/findpagelist", method = RequestMethod.POST)
+    public AjaxResult findPageList(@RequestBody @Validated QueryDto queryDto) throws Exception {
+        return AjaxResult.success(service.findPageList(queryDto));
+    }
+
+    @ApiOperation(value = "获取镇和村组织")
+    @RequestMapping(value = "/getlistNotcounty", method = RequestMethod.POST)
+    public AjaxResult getlistNotcounty() throws Exception {
+        return AjaxResult.success(service.getlistNotcounty());
     }
 
     @ApiOperation(value = "新增")
@@ -73,7 +88,7 @@ public class OrganizationTableController {
     @ApiOperation(value = "按ID删除")
     @RequestMapping(value = "/deletebyid", method = RequestMethod.POST)
     public AjaxResult delete(String id) {
-        boolean bl = service.removeById(id);
+        boolean bl = service.delete(id);
         if (bl) {
             return AjaxResult.success("删除成功");
         } else {

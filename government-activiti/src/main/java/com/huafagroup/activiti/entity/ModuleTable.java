@@ -62,12 +62,15 @@ public class ModuleTable extends BaseEntity {
 
     private String title;
     /**
-     * 内容展示类型，0党组织展示，1普通，2链接
+     *  内容展示类型，0党组织展示，1普通，2链接
      */
     @ApiModelProperty(value = "内容展示类型，0党组织展示，1普通，2链接")
-
-
-    private Boolean type;
+    private Integer type;
+    /**
+     * 页面类型，0组织运作，1生产服务，2生活服务
+     */
+    @ApiModelProperty(value = "页面类型，0组织运作，1生产服务，2生活服务")
+    private Integer pageType;
     /**
      * 链接地址
      */
@@ -88,7 +91,7 @@ public class ModuleTable extends BaseEntity {
     @ApiModelProperty(value = "状态，0停用，1显示")
 
 
-    private Boolean status;
+    private Integer status;
     /**
      * 简介
      */
@@ -151,14 +154,21 @@ public class ModuleTable extends BaseEntity {
     }
 
 
-    public Boolean getType() {
+    public Integer getType() {
         return type;
     }
 
-    public void setType(Boolean type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 
+    public Integer getPageType() {
+        return pageType;
+    }
+
+    public void setPageType(Integer pageType) {
+        this.pageType = pageType;
+    }
 
     public String getLinkUrl() {
         return linkUrl;
@@ -178,11 +188,11 @@ public class ModuleTable extends BaseEntity {
     }
 
 
-    public Boolean getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

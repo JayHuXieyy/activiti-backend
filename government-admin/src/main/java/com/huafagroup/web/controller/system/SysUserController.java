@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.huafagroup.common.utils.QueryDto;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -35,6 +36,7 @@ import com.huafagroup.system.service.ISysUserService;
  *
  * @author huafagroup
  */
+@Api(tags = "后台用户接口")
 @RestController
 @RequestMapping("/system/user")
 public class SysUserController extends BaseController {

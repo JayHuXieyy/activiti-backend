@@ -48,6 +48,13 @@ public class OrganizationTable extends BaseEntity {
 
     private Integer sort;
     /**
+     * 级别,0县，1镇，2村
+     */
+    @ApiModelProperty(value = "级别,0县，1镇，2村")
+
+
+    private Integer rank;
+    /**
      * 党组织名称
      */
     @ApiModelProperty(value = "党组织名称")
@@ -60,7 +67,7 @@ public class OrganizationTable extends BaseEntity {
     @ApiModelProperty(value = "状态，0停用，1显示")
 
 
-    private Boolean status;
+    private Integer status;
 
     public Long getId() {
         return id;
@@ -79,6 +86,13 @@ public class OrganizationTable extends BaseEntity {
         this.parentId = parentId;
     }
 
+    public Integer getRank() {
+        return rank;
+    }
+
+    public void setRank(Integer rank) {
+        this.rank = rank;
+    }
 
     public String getRemark() {
         return remark;
@@ -107,11 +121,11 @@ public class OrganizationTable extends BaseEntity {
     }
 
 
-    public Boolean getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

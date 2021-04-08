@@ -2,7 +2,12 @@ package com.huafagroup.activiti.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.huafagroup.activiti.domain.dto.ModuleTableDto;
 import com.huafagroup.activiti.entity.ModuleTable;
+import com.huafagroup.common.utils.QueryDto;
+
+import java.text.ParseException;
+import java.util.List;
 
 /**
 * <p>
@@ -15,4 +20,5 @@ import com.huafagroup.activiti.entity.ModuleTable;
 
 public interface ModuleTableService extends IService<ModuleTable>{
 
+    List<ModuleTableDto> findPageList(QueryDto queryDto) throws ParseException;
 }

@@ -2,6 +2,8 @@ package com.huafagroup.web.controller.system;
 
 import java.util.List;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -35,6 +37,7 @@ import com.huafagroup.system.service.ISysUserService;
  *
  * @author huafagroup
  */
+@Api(tags = "角色接口")
 @RestController
 @RequestMapping("/system/role")
 public class SysRoleController extends BaseController {
@@ -50,6 +53,7 @@ public class SysRoleController extends BaseController {
     @Autowired
     private ISysUserService userService;
 
+    @ApiOperation(value = "获取列表记录")
     @PreAuthorize("@ss.hasPermi('system:role:list')")
     @GetMapping("/list")
     public TableDataInfo list(SysRole role) {

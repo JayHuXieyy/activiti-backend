@@ -48,6 +48,13 @@ public class ArticleTable extends BaseEntity {
 
     private String source;
     /**
+     * 作者
+     */
+    @ApiModelProperty(value = "作者")
+
+
+    private String author;
+    /**
      * 文章标题
      */
     @ApiModelProperty(value = "文章标题")
@@ -88,7 +95,14 @@ public class ArticleTable extends BaseEntity {
     @ApiModelProperty(value = "状态，0停用，1显示")
 
 
-    private Boolean status;
+    private Integer status;
+    /**
+     * 审批状态，0未审批，1审批中，2已审批，3退回
+     */
+    @ApiModelProperty(value = "审批状态，0未审批，1审批中，2已审批，3退回")
+
+
+    private Integer activitiStatus;
 
     public Long getId() {
         return id;
@@ -107,6 +121,13 @@ public class ArticleTable extends BaseEntity {
         this.keywords = keywords;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
 
     public String getRemark() {
         return remark;
@@ -116,6 +137,13 @@ public class ArticleTable extends BaseEntity {
         this.remark = remark;
     }
 
+    public Integer getActivitiStatus() {
+        return activitiStatus;
+    }
+
+    public void setActivitiStatus(Integer activitiStatus) {
+        this.activitiStatus = activitiStatus;
+    }
 
     public String getSource() {
         return source;
@@ -171,11 +199,11 @@ public class ArticleTable extends BaseEntity {
     }
 
 
-    public Boolean getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

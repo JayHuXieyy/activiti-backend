@@ -2,7 +2,11 @@ package com.huafagroup.activiti.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.huafagroup.activiti.domain.dto.CatalogTableDto;
 import com.huafagroup.activiti.entity.CatalogTable;
+import com.huafagroup.common.utils.QueryDto;
+
+import java.util.List;
 
 /**
 * <p>
@@ -15,4 +19,5 @@ import com.huafagroup.activiti.entity.CatalogTable;
 
 public interface CatalogTableService extends IService<CatalogTable>{
 
+    List<CatalogTableDto> findPageList(QueryDto queryDto);
 }
