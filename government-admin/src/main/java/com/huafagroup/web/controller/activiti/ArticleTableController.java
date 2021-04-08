@@ -61,6 +61,7 @@ public class ArticleTableController {
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public AjaxResult create(@RequestBody @Validated ArticleTable item) {
         item.setActivitiStatus(Constants.status_0);
+        item.setDelFlag(Constants.status_0);
         boolean bl = service.save(item);
         if (bl) {
             return AjaxResult.success("新增成功");

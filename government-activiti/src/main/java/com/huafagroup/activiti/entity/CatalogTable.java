@@ -85,6 +85,13 @@ public class CatalogTable extends BaseEntity {
 
 
     private String synopsisContent;
+    /**
+     * 删除标志（0代表存在 1代表删除）
+     */
+    @ApiModelProperty(value = "删除标志（0代表存在 1代表删除）")
+
+
+    private Integer delFlag;
 
     public Long getId() {
         return id;
@@ -94,6 +101,13 @@ public class CatalogTable extends BaseEntity {
         this.id = id;
     }
 
+    public Integer getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(Integer delFlag) {
+        this.delFlag = delFlag;
+    }
 
     public Long getModuleId() {
         return moduleId;

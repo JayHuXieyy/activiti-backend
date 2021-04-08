@@ -50,7 +50,7 @@
     </resultMap>
 
     <sql id="selectUserVo">
-        select u.user_id, u.dept_id,u.organization_id,u.is_activiti, u.user_name, u.nick_name, u.email, u.owner_code, u.avatar, u.phonenumber,
+        select u.user_id, u.dept_id,u.organization_id, u.user_name, u.nick_name, u.email, u.owner_code, u.avatar, u.phonenumber,
         u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,
         d.dept_id, d.parent_id, d.dept_name, d.order_num, d.leader, d.status as dept_status,u.is_party,
         r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
@@ -62,7 +62,7 @@
 
     <select id="selectUserList" parameterType="com.huafagroup.common.core.domain.entity.SysUser"
             resultMap="SysUserResult">
-        select u.user_id, u.dept_id, u.organization_id,u.is_activiti,u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,u.is_party,
+        select u.user_id, u.dept_id, u.organization_id,u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,u.is_party,
         u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, d.dept_name, d.leader from
         sys_user u
         left join sys_dept d on u.dept_id = d.dept_id

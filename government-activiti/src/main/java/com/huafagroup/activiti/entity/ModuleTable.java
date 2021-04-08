@@ -72,6 +72,13 @@ public class ModuleTable extends BaseEntity {
     @ApiModelProperty(value = "页面类型，0组织运作，1生产服务，2生活服务")
     private Integer pageType;
     /**
+     * 删除标志（0代表存在 1代表删除）
+     */
+    @ApiModelProperty(value = "删除标志（0代表存在 1代表删除）")
+
+
+    private Integer delFlag;
+    /**
      * 链接地址
      */
     @ApiModelProperty(value = "链接地址")
@@ -108,6 +115,13 @@ public class ModuleTable extends BaseEntity {
         this.id = id;
     }
 
+    public Integer getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(Integer delFlag) {
+        this.delFlag = delFlag;
+    }
 
     public String getIcon() {
         return icon;

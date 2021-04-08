@@ -2,6 +2,7 @@ package com.huafagroup.web.controller.activiti;
 
 import com.huafagroup.activiti.entity.CatalogTable;
 import com.huafagroup.activiti.service.CatalogTableService;
+import com.huafagroup.common.constant.Constants;
 import com.huafagroup.common.core.domain.AjaxResult;
 import com.huafagroup.common.utils.QueryDto;
 import io.swagger.annotations.Api;
@@ -60,6 +61,7 @@ public class CatalogTableController {
     @ApiOperation(value = "新增")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public AjaxResult create(@RequestBody @Validated CatalogTable item) {
+        item.setDelFlag(Constants.status_0);
         boolean bl = service.save(item);
         if (bl) {
             return AjaxResult.success("新增成功");

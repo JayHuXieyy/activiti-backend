@@ -1,7 +1,8 @@
 package com.huafagroup.activiti.service.biz;
 
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.huafagroup.activiti.domain.dto.BizTerminalIndexDto;
+import com.huafagroup.activiti.entity.ModuleTable;
 
 import java.util.List;
 
@@ -15,4 +16,7 @@ import java.util.List;
 
 public interface BizTerminalService {
 
+    BizTerminalIndexDto index();
+
+    List<ModuleTable> moreModule(Integer pageType);
 }

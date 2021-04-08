@@ -68,6 +68,13 @@ public class OrganizationTable extends BaseEntity {
 
 
     private Integer status;
+    /**
+     * 删除标志（0代表存在 1代表删除）
+     */
+    @ApiModelProperty(value = "删除标志（0代表存在 1代表删除）")
+
+
+    private Integer delFlag;
 
     public Long getId() {
         return id;
@@ -77,6 +84,13 @@ public class OrganizationTable extends BaseEntity {
         this.id = id;
     }
 
+    public Integer getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(Integer delFlag) {
+        this.delFlag = delFlag;
+    }
 
     public Long getParentId() {
         return parentId;

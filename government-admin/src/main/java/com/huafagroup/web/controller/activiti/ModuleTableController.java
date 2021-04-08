@@ -2,6 +2,7 @@ package com.huafagroup.web.controller.activiti;
 
 import com.huafagroup.activiti.entity.ModuleTable;
 import com.huafagroup.activiti.service.ModuleTableService;
+import com.huafagroup.common.constant.Constants;
 import com.huafagroup.common.core.domain.AjaxResult;
 import com.huafagroup.common.utils.QueryDto;
 import io.swagger.annotations.Api;
@@ -59,6 +60,7 @@ public class ModuleTableController {
     @ApiOperation(value = "新增")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public AjaxResult create(@RequestBody @Validated ModuleTable item) {
+        item.setDelFlag(Constants.status_0);
         boolean bl = service.save(item);
         if (bl) {
             return AjaxResult.success("新增成功");
