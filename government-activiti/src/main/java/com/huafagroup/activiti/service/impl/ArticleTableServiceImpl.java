@@ -13,6 +13,7 @@ import com.huafagroup.activiti.mapper.ArticleTableMapper;
 import com.huafagroup.activiti.mapper.CatalogTableMapper;
 import com.huafagroup.activiti.mapper.OrganizationTableMapper;
 import com.huafagroup.activiti.service.ArticleTableService;
+import com.huafagroup.common.constant.Constants;
 import com.huafagroup.common.utils.QueryDto;
 import com.huafagroup.common.utils.SearchQueryEnum;
 import org.slf4j.Logger;
@@ -46,62 +47,68 @@ public class ArticleTableServiceImpl extends ServiceImpl
 
     @Override
     public List<CatalogArticleDto> findPageList(QueryDto queryDto) {
-        LambdaQueryWrapper<CatalogTable> parentQueryWrapper= Wrappers.lambdaQuery();
-        OrganizationTable organizationTable=null;
+        LambdaQueryWrapper<CatalogTable> parentQueryWrapper = Wrappers.lambdaQuery();
+        OrganizationTable organizationTable = null;
         // 名称查询
         if (queryDto.getSearchValue().get(SearchQueryEnum.MODULE_ID.getValue()) != null) {
-            parentQueryWrapper.eq(CatalogTable::getModuleId,queryDto.getSearchValue().get(SearchQueryEnum.MODULE_ID.getValue()));
+            parentQueryWrapper.eq(CatalogTable::getModuleId, queryDto.getSearchValue().get(SearchQueryEnum.MODULE_ID.getValue()));
         }
         // 页面类型查询
         if (queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()) != null) {
-            parentQueryWrapper.eq(CatalogTable::getPageType,queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()));
+            parentQueryWrapper.eq(CatalogTable::getPageType, queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()));
         }
         // 组织id查询
         if (queryDto.getSearchValue().get(SearchQueryEnum.ORGANIZATION_ID.getValue()) != null) {
-            organizationTable=organizationTableService.getById(SearchQueryEnum.ORGANIZATION_ID.getValue());
+            organizationTable = organizationTableService.getById(SearchQueryEnum.ORGANIZATION_ID.getValue());
             //判断组织的级别
-            if(organizationTable.getRank()==1){
+            if (organizationTable.getRank() == 1) {
                 //镇
-                parentQueryWrapper.in(CatalogTable::getType,1,3);
-            }else if(organizationTable.getRank()==2){
+                parentQueryWrapper.in(CatalogTable::getType, 1, 3);
+            } else if (organizationTable.getRank() == 2) {
                 //村
-                parentQueryWrapper.in(CatalogTable::getType,2,3);
+                parentQueryWrapper.in(CatalogTable::getType, 2, 3);
             }
         }
-        parentQueryWrapper.eq(CatalogTable::getParentId,null);
-        parentQueryWrapper.orderByAsc(CatalogTable::getSort);
-        List<CatalogTable> parents=catalogTableService.list(parentQueryWrapper);
-        List<CatalogArticleDto> catalogArticleDtos=new ArrayList<>();
-        LambdaQueryWrapper<CatalogTable> childQueryWrapper= Wrappers.lambdaQuery();
-        LambdaQueryWrapper<ArticleTable> articleQueryWrapper= Wrappers.lambdaQuery();
-        for (CatalogTable item:parents){
+        parentQueryWrapper.eq(CatalogTable::getParentId, null)
+                .eq(CatalogTable::getDelFlag, Constants.status_0)
+                .orderByAsc(CatalogTable::getSort);
+        List<CatalogTable> parents = catalogTableService.list(parentQueryWrapper);
+        List<CatalogArticleDto> catalogArticleDtos = new ArrayList<>();
+        LambdaQueryWrapper<CatalogTable> childQueryWrapper = Wrappers.lambdaQuery();
+        LambdaQueryWrapper<ArticleTable> articleQueryWrapper = Wrappers.lambdaQuery();
+        for (CatalogTable item : parents) {
+            //父类转子类
+            CatalogArticleDto catalogArticleDto = (CatalogArticleDto) item;
             List<CatalogTable> childsData;
             //子目录
-            List<CatalogArticleDto> childs=new ArrayList<>();
-            //父目录下的文章
-            List<ArticleTable> parentArticles=new ArrayList<>();
-            //子目录下的文章
-            List<ArticleTable> childArticles=new ArrayList<>();
-            //父类转子类
-            CatalogArticleDto catalogArticleDto=(CatalogArticleDto)item;
+            List<CatalogArticleDto> childs = new ArrayList<>();
             //获取父目录文章(只有动态目录才有)
-            if (queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()) .equals("0")) {
-                articleQueryWrapper.eq(ArticleTable::getCatalogId,item.getId());
-                parentArticles=mapper.selectList(articleQueryWrapper);
+            if (queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()).equals("0")) {
+                articleQueryWrapper.eq(ArticleTable::getCatalogId, item.getId());
+                List<ArticleTable> parentArticles = mapper.selectList(articleQueryWrapper);
                 catalogArticleDto.setArticleTables(parentArticles);
                 articleQueryWrapper.clear();
             }
+            //子目录下的文章
+            List<ArticleTable> childArticles = new ArrayList<>();
+
             //获取子目录
-            childQueryWrapper.eq(CatalogTable::getParentId,item.getId())
+            childQueryWrapper.eq(CatalogTable::getParentId, item.getId())
+                    .eq(CatalogTable::getDelFlag, Constants.status_0)
                     .orderByAsc(CatalogTable::getSort);
-            childsData=catalogTableService.list(childQueryWrapper);
-            if(childsData!=null){
+            childsData = catalogTableService.list(childQueryWrapper);
+            if (childsData != null) {
                 //将元素转化为子类
-                for (CatalogTable catalogTable:childsData){
-                    CatalogArticleDto childDto=(CatalogArticleDto) catalogTable;
+                for (CatalogTable catalogTable : childsData) {
+                    CatalogArticleDto childDto = (CatalogArticleDto) catalogTable;
                     //获取子目录文章
-                    articleQueryWrapper.eq(ArticleTable::getCatalogId,catalogTable.getId());
-                    childArticles=mapper.selectList(articleQueryWrapper);
+                    articleQueryWrapper.eq(ArticleTable::getCatalogId, catalogTable.getId())
+                            .eq(ArticleTable::getDelFlag, Constants.status_0);
+                    if (queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()).equals("1")) {
+                        //如果为非动态目录，需要筛选组织id
+                        articleQueryWrapper.eq(ArticleTable::getOrganizationId,queryDto.getSearchValue().get(SearchQueryEnum.ORGANIZATION_ID.getValue()));
+                    }
+                    childArticles = mapper.selectList(articleQueryWrapper);
                     childDto.setArticleTables(childArticles);
                     childs.add(childDto);
                     articleQueryWrapper.clear();
@@ -109,6 +116,7 @@ public class ArticleTableServiceImpl extends ServiceImpl
             }
             catalogArticleDto.setChilds(childs);
             childQueryWrapper.clear();
+            catalogArticleDtos.add(catalogArticleDto);
         }
 
         return catalogArticleDtos;

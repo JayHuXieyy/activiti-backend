@@ -31,14 +31,39 @@ public class BizTerminalController {
 
     @ApiOperation(value = "终端首页")
     @RequestMapping(value = "/index", method = RequestMethod.POST)
-    public AjaxResult index(){
+    public AjaxResult index() {
         return AjaxResult.success(service.index());
     }
 
     @ApiOperation(value = "更多模块")
     @RequestMapping(value = "/moreModule", method = RequestMethod.POST)
-    public AjaxResult moreModule(@RequestParam Integer pageType){
+    public AjaxResult moreModule(@RequestParam Integer pageType) {
         return AjaxResult.success(service.moreModule(pageType));
+    }
+
+    @ApiOperation(value = "模块详细/镇村详细页面")
+    @RequestMapping(value = "/info", method = RequestMethod.POST)
+    public AjaxResult info(@RequestBody @Validated QueryDto queryDto) {
+        return AjaxResult.success(service.info(queryDto));
+    }
+
+
+    @ApiOperation(value = "获取所有镇")
+    @RequestMapping(value = "/getAllTown", method = RequestMethod.POST)
+    public AjaxResult getAllTown(@RequestBody @Validated QueryDto queryDto) {
+        return AjaxResult.success(service.getAllTown(queryDto));
+    }
+
+    @ApiOperation(value = "根据镇获取所有村")
+    @RequestMapping(value = "/getVillageByTown", method = RequestMethod.POST)
+    public AjaxResult getVillageByTown(@RequestBody @Validated QueryDto queryDto) {
+        return AjaxResult.success(service.getVillageByTown(queryDto));
+    }
+
+    @ApiOperation(value = "文章详情")
+    @RequestMapping(value = "/articleInfo", method = RequestMethod.POST)
+    public AjaxResult articleInfo(@RequestParam Long articleId) {
+        return AjaxResult.success(service.articleInfo(articleId));
     }
 
 }

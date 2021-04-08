@@ -36,7 +36,7 @@ public enum SearchQueryEnum {
     ROLE_ID("roleId", "角色id"),
     PAGE_TYPE("pageType", "模块页面类型"),
     MODULE_ID("moduleId", "模块id"),
-    ORGANIZATION_ID("organizationId", "模块id")
+    ORGANIZATION_ID("organizationId", "组织id")
     ;
     private final String value;
     private final String desc;
