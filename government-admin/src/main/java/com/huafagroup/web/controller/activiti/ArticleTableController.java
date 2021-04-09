@@ -91,4 +91,15 @@ public class ArticleTableController {
             return AjaxResult.error("删除失败");
         }
     }
+
+    @ApiOperation(value = "发起审批")
+    @RequestMapping(value = "/launch", method = RequestMethod.POST)
+    public AjaxResult launch(String id) {
+        boolean bl = service.launch(id);
+        if (bl) {
+            return AjaxResult.success("删除成功");
+        } else {
+            return AjaxResult.error("删除失败");
+        }
+    }
 }

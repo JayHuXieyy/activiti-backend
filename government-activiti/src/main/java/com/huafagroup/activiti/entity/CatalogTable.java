@@ -92,6 +92,21 @@ public class CatalogTable extends BaseEntity {
 
 
     private Integer delFlag;
+    /**
+     * 状态，0停用，1显示
+     */
+    @ApiModelProperty(value = "状态，0停用，1显示")
+
+
+    private Integer status;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     public Long getId() {
         return id;

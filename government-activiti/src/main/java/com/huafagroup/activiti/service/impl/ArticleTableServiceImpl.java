@@ -2,6 +2,7 @@ package com.huafagroup.activiti.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.huafagroup.activiti.domain.dto.CatalogArticleDto;
@@ -120,5 +121,13 @@ public class ArticleTableServiceImpl extends ServiceImpl
         }
 
         return catalogArticleDtos;
+    }
+
+    @Override
+    public Boolean launch(String id) {
+        LambdaUpdateWrapper<ArticleTable> updateWrapper=Wrappers.lambdaUpdate();
+        updateWrapper.set(ArticleTable::getId,id)
+                .set(ArticleTable::getActivitiStatus,Constants.status_1);
+        return this.update(updateWrapper);
     }
 }

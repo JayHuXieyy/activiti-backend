@@ -11,6 +11,7 @@
         <result property="deptName" column="dept_name"/>
         <result property="orderNum" column="order_num"/>
         <result property="leader" column="leader"/>
+        <result property="activitiLeader" column="activiti_leader"/>
         <result property="phone" column="phone"/>
         <result property="email" column="email"/>
         <result property="status" column="status"/>
@@ -30,10 +31,9 @@
     </sql>
 
     <sql id="selectDeptUserVo">
-        select d.dept_id, d.parent_id, d.ancestors, d.dept_name, d.order_num, u.user_name as leader, d.phone, d.email, d.status,
+        select d.dept_id, d.parent_id, d.ancestors, d.dept_name, d.order_num, d.activiti_leader, d.phone, d.email, d.status,
                d.del_flag, d.create_by, d.create_time, d.synopsis
         from sys_dept d
-        left join sys_user u on (u.dept_id = d.deptId and u.is_activiti = 1)
     </sql>
 
     <select id="selectDeptList" parameterType="com.huafagroup.common.core.domain.entity.SysDept"

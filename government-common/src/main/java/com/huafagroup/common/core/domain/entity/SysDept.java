@@ -47,6 +47,10 @@ public class SysDept extends BaseEntity {
      * 负责人
      */
     private String leader;
+    /**
+     * 负责人
+     */
+    private String activitiLeader;
 
     /**
      * 联系电话
@@ -89,6 +93,14 @@ public class SysDept extends BaseEntity {
 
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
+    }
+
+    public String getActivitiLeader() {
+        return activitiLeader;
+    }
+
+    public void setActivitiLeader(String activitiLeader) {
+        this.activitiLeader = activitiLeader;
     }
 
     public Long getParentId() {

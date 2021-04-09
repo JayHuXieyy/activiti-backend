@@ -21,4 +21,6 @@ import java.util.List;
 public interface ArticleTableService extends IService<ArticleTable>{
 
     List<CatalogArticleDto> findPageList(QueryDto queryDto);
+
+    Boolean launch(String id);
 }

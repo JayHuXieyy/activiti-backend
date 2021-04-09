@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.huafagroup.common.constant.Constants;
 
+import com.huafagroup.common.core.domain.entity.SysDept;
 import com.huafagroup.common.exception.ParamException;
 import com.huafagroup.common.utils.QueryDto;
 import com.huafagroup.common.utils.SearchQueryEnum;
@@ -67,6 +69,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Autowired
     private ISysConfigService configService;
 
+    @Autowired
+    private SysDeptServiceImpl sysDeptService;
+
 
     /**
      * 根据条件分页查询用户列表
@@ -100,11 +105,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         // 用户角色查询
         if (queryDto.getSearchValue().get(SearchQueryEnum.ROLE_ID.getValue()) != null) {
-            LambdaQueryWrapper<SysUserRole> userRoleQuery=Wrappers.lambdaQuery();
-            userRoleQuery.eq(SysUserRole::getRoleId,Long.parseLong(String.valueOf(queryDto.getSearchValue().get(SearchQueryEnum.ROLE_ID.getValue()))));
-            List<SysUserRole> userRoles=userRoleMapper.selectList(userRoleQuery);
-            List<Long> userIds=userRoles.stream().map(SysUserRole::getUserId).collect(Collectors.toList());
-            lambdaQueryWrapper.in(SysUser::getUserId,userIds);
+            LambdaQueryWrapper<SysUserRole> userRoleQuery = Wrappers.lambdaQuery();
+            userRoleQuery.eq(SysUserRole::getRoleId, Long.parseLong(String.valueOf(queryDto.getSearchValue().get(SearchQueryEnum.ROLE_ID.getValue()))));
+            List<SysUserRole> userRoles = userRoleMapper.selectList(userRoleQuery);
+            List<Long> userIds = userRoles.stream().map(SysUserRole::getUserId).collect(Collectors.toList());
+            lambdaQueryWrapper.in(SysUser::getUserId, userIds);
         }
 
         Page<SysUser> userPage = userMapper.selectPage(new Page<>(queryDto.getPageNo(), queryDto.getPageSize()), lambdaQueryWrapper);
@@ -115,16 +120,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             if (records.size() > 0) {
                 List<Integer> roleIds;
                 List<SysRole> roles;
-                LambdaQueryWrapper<SysRole> roleQuery=Wrappers.lambdaQuery();
-                for(SysUser item:records){
+                LambdaQueryWrapper<SysRole> roleQuery = Wrappers.lambdaQuery();
+                for (SysUser item : records) {
                     SysUserDto dto = new SysUserDto();
                     BeanUtils.copyProperties(item, dto);
                     //获取角色id
-                    roleIds=roleMapper.selectRoleListByUserId(item.getUserId());
+                    roleIds = roleMapper.selectRoleListByUserId(item.getUserId());
                     //获取角色
-                    if(roleIds.size()>0){
-                        roleQuery.in(SysRole::getRoleId,roleIds);
-                        roles=roleMapper.selectList(roleQuery);
+                    if (roleIds.size() > 0) {
+                        roleQuery.in(SysRole::getRoleId, roleIds);
+                        roles = roleMapper.selectList(roleQuery);
                         dto.setRoleList(roles);
                     }
                     list.add(dto);
@@ -243,9 +248,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public List<String>selectUserNameByPostCodeAndDeptId(String postCode, Long deptId){
-        return userMapper.selectUserNameByPostCodeAndDeptId(postCode,deptId);
+    public List<String> selectUserNameByPostCodeAndDeptId(String postCode, Long deptId) {
+        return userMapper.selectUserNameByPostCodeAndDeptId(postCode, deptId);
     }
+
     /**
      * 校验用户名称是否唯一
      *
@@ -317,26 +323,26 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public int insertUser(SysUser user) {
         Long[] roles = user.getRoleIds();
         if (StringUtils.isNotNull(roles)) {
-            LambdaQueryWrapper<SysRole> roleQuery=Wrappers.lambdaQuery();
-            roleQuery.eq(SysRole::getRoleName,"审批负责人");
-            SysRole role=roleMapper.selectOne(roleQuery);
+            LambdaQueryWrapper<SysRole> roleQuery = Wrappers.lambdaQuery();
+            roleQuery.eq(SysRole::getRoleName, "审批负责人");
+            //获取审批负责人的角色实体
+            SysRole role = roleMapper.selectOne(roleQuery);
             roleQuery.clear();
             for (Long roleId : roles) {
-                if(role.getRoleId().equals(roleId)){
+                if (role.getRoleId().equals(roleId)) {
+                    //新增用户角色包含审批负责人
                     //判断是否已存在审批负责人
-                    LambdaQueryWrapper<SysUser> userQueryWrapper=Wrappers.lambdaQuery();
-                    userQueryWrapper.eq(SysUser::getDeptId,user.getDeptId())
-                            .eq(SysUser::getDelFlag,Constants.status_0);
-                    List<SysUser> users=userMapper.selectList(userQueryWrapper);
-                    for (SysUser item : users) {
-                        LambdaQueryWrapper<SysUserRole> userRoleQuery=Wrappers.lambdaQuery();
-                        userRoleQuery.eq(SysUserRole::getUserId,item.getUserId())
-                                .eq(SysUserRole::getRoleId,role.getRoleId());
-                        SysUserRole userRole=userRoleMapper.selectOne(userRoleQuery);
-                        if (userRole!=null) {
-                            throw new ParamException("当前部门已存在审批负责人");
-                        }
+                    SysDept sysDept = sysDeptService.getById(user.getDeptId());
+                    if (sysDept.getActivitiLeader() != null) {
+                        throw new ParamException("当前部门已存在审批负责人");
+                    } else {
+                        //新增用户为审批负责人角色同步修改部门表
+                        LambdaUpdateWrapper<SysDept> updateWrapper = Wrappers.lambdaUpdate();
+                        updateWrapper.eq(SysDept::getDeptId, sysDept.getDeptId())
+                                .set(SysDept::getActivitiLeader, user.getUserName());
+                        sysDeptService.update(updateWrapper);
                     }
+                    break;
                 }
             }
         }
@@ -359,31 +365,33 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     @Transactional
     public int updateUser(SysUser user) {
+        SysDept sysDept = sysDeptService.getById(user.getDeptId());
+        Boolean flag = false;//判断roles是否含有审批负责人的标识
         Long[] roles = user.getRoleIds();
         if (StringUtils.isNotNull(roles)) {
             LambdaQueryWrapper<SysRole> roleQuery = Wrappers.lambdaQuery();
             roleQuery.eq(SysRole::getRoleName, "审批负责人");
+            //获取审批负责人角色实体
             SysRole role = roleMapper.selectOne(roleQuery);
             roleQuery.clear();
             for (Long roleId : roles) {
                 if (role.getRoleId().equals(roleId)) {
-                    //判断是否已存在审批负责人
-                    LambdaQueryWrapper<SysUser> userQueryWrapper = Wrappers.lambdaQuery();
-                    userQueryWrapper.eq(SysUser::getDeptId, user.getDeptId())
-                            .ne(SysUser::getUserId,user.getUserId())
-                            .eq(SysUser::getDelFlag, Constants.status_0);
-                    List<SysUser> users = userMapper.selectList(userQueryWrapper);
-                    for (SysUser item : users) {
-                        LambdaQueryWrapper<SysUserRole> userRoleQuery=Wrappers.lambdaQuery();
-                        userRoleQuery.eq(SysUserRole::getUserId,item.getUserId())
-                                .eq(SysUserRole::getRoleId,role.getRoleId());
-                        SysUserRole userRole=userRoleMapper.selectOne(userRoleQuery);
-                        if (userRole!=null) {
-                            throw new ParamException("当前部门已存在审批负责人");
-                        }
+                    //修改后的信息包含审批负责人角色
+                    flag = true;
+                    //判断是否已存在审批负责人且被修改用户是否为审批负责人
+                    if (sysDept.getDeptId() != null && !sysDept.getDeptId().equals(user.getUserName())) {
+                        throw new ParamException("当前部门已存在审批负责人");
                     }
+                    break;
                 }
             }
+        }
+        if (sysDept.getDeptId().equals(user.getUserName()) && !flag) {
+            //被修改后用户失去审批负责人角色同步修改部门表
+            LambdaUpdateWrapper<SysDept> updateWrapper = Wrappers.lambdaUpdate();
+            updateWrapper.eq(SysDept::getDeptId, sysDept.getDeptId())
+                    .set(SysDept::getActivitiLeader, null);
+            sysDeptService.update(updateWrapper);
         }
 
         Long userId = user.getUserId();
