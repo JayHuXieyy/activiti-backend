@@ -1,5 +1,8 @@
 package com.huafagroup.web.controller.activiti;
 
+import com.huafagroup.activiti.domain.dto.CatalogArticleDto;
+import com.huafagroup.activiti.domain.dto.CatalogTableDto;
+import com.huafagroup.activiti.entity.ArticleTable;
 import com.huafagroup.activiti.entity.CatalogTable;
 import com.huafagroup.activiti.service.CatalogTableService;
 import com.huafagroup.common.constant.Constants;
@@ -7,6 +10,8 @@ import com.huafagroup.common.core.domain.AjaxResult;
 import com.huafagroup.common.utils.QueryDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +40,9 @@ public class CatalogTableController {
 
 
     @ApiOperation(value = "获取单条记录", notes = "根据url的id来获取详细信息")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "ok", response = CatalogTable.class),
+    })
     @RequestMapping(value = "/get", method = RequestMethod.GET)
     public AjaxResult get(String id) {
         CatalogTable item = service.getById(id);
@@ -46,6 +54,9 @@ public class CatalogTableController {
     }
 
     @ApiOperation(value = "管理后台查询列表")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "ok", response = CatalogTableDto.class, responseContainer = "Page"),
+    })
     @RequestMapping(value = "/findpagelist", method = RequestMethod.POST)
     public AjaxResult findPageList(@RequestBody @Validated QueryDto queryDto) throws Exception {
         return AjaxResult.success(service.findPageList(queryDto));
@@ -53,6 +64,9 @@ public class CatalogTableController {
 
 
     @ApiOperation(value = "获取列表记录")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "ok", response = CatalogTable.class,responseContainer = "List"),
+    })
     @RequestMapping(value = "/getlist", method = RequestMethod.GET)
     public AjaxResult getList() {
         return AjaxResult.success(service.list());

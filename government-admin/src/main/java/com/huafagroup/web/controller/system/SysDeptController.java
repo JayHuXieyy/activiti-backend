@@ -3,8 +3,11 @@ package com.huafagroup.web.controller.system;
 import java.util.Iterator;
 import java.util.List;
 
+import com.huafagroup.activiti.domain.dto.OrganizationNotCountryDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,6 +46,10 @@ public class SysDeptController extends BaseController {
      * 获取部门列表
      */
     @PreAuthorize("@ss.hasPermi('system:dept:list')")
+    @ApiOperation(value = "获取部门列表")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "ok", response = SysDept.class,responseContainer = "List"),
+    })
     @GetMapping("/list")
     public AjaxResult list(SysDept dept) {
         List<SysDept> depts = deptService.selectDeptList(dept);
