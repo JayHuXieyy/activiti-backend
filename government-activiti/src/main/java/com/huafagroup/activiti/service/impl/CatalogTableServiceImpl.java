@@ -39,7 +39,7 @@ public class CatalogTableServiceImpl extends ServiceImpl
     @Override
     public List<CatalogTableDto> findPageList(QueryDto queryDto) {
         LambdaQueryWrapper<CatalogTable> parentQueryWrapper= Wrappers.lambdaQuery();
-        // 名称查询
+        // 模块查询
         if (queryDto.getSearchValue().get(SearchQueryEnum.MODULE_ID.getValue()) != null) {
             parentQueryWrapper.eq(CatalogTable::getModuleId,queryDto.getSearchValue().get(SearchQueryEnum.MODULE_ID.getValue()));
         }
@@ -47,7 +47,7 @@ public class CatalogTableServiceImpl extends ServiceImpl
         if (queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()) != null) {
             parentQueryWrapper.eq(CatalogTable::getPageType,queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()));
         }
-        parentQueryWrapper.eq(CatalogTable::getParentId,null);
+        parentQueryWrapper.isNull(CatalogTable::getParentId);
         parentQueryWrapper.orderByAsc(CatalogTable::getSort);
         List<CatalogTable> parents=mapper.selectList(parentQueryWrapper);
         List<CatalogTableDto> catalogTableDtos=new ArrayList<>();
@@ -61,6 +61,7 @@ public class CatalogTableServiceImpl extends ServiceImpl
             childs=mapper.selectList(childQueryWrapper);
             catalogTableDto.setChilds(childs);
             childQueryWrapper.clear();
+            catalogTableDtos.add(catalogTableDto);
         }
 
         return catalogTableDtos;

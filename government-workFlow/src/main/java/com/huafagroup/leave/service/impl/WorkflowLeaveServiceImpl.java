@@ -11,6 +11,7 @@ import com.huafagroup.system.service.ISysUserService;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.process.model.builders.ProcessPayloadBuilder;
 import org.activiti.api.process.runtime.ProcessRuntime;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,8 @@ public class WorkflowLeaveServiceImpl implements IWorkflowLeaveService {
     private ISysUserService sysUserService;
     @Autowired
     private TaskService taskService;
-
+    @Autowired
+    private RuntimeService runtimeService;
 
     /**
      * 查询请假
@@ -98,10 +100,12 @@ public class WorkflowLeaveServiceImpl implements IWorkflowLeaveService {
         String join = StringUtils.join(sysUserService.selectUserNameByPostCodeAndDeptId("se", SecurityUtils.getLoginUser().getUser().getDeptId()), ",");
         ProcessInstance processInstance = processRuntime.start(ProcessPayloadBuilder
                 .start()
-                .withProcessDefinitionKey("leave")
+                .withProcessDefinitionKey("Process_1")
                 .withName(workflowLeave.getTitle())
                 .withBusinessKey(id)
-                .withVariable("deptLeader",join)
+                //设置${deptLeader1}的值
+                .withVariable("deptLeader1",join)
+                .withVariable("deptLeader2",join)
                 .build());
         workflowLeave.setInstanceId(processInstance.getId());
         workflowLeave.setState("0");

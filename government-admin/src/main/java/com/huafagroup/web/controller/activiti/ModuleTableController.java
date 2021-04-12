@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
+
 /**
  * <p>
  * </p>
@@ -74,6 +76,7 @@ public class ModuleTableController {
     @ApiOperation(value = "新增")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public AjaxResult create(@RequestBody @Validated ModuleTable item) {
+        item.setCreateTime(new Date());
         item.setDelFlag(Constants.status_0);
         boolean bl = service.save(item);
         if (bl) {

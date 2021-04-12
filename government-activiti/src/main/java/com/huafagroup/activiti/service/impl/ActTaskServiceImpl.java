@@ -20,6 +20,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ public class ActTaskServiceImpl implements IActTaskService {
     @Override
     public List<String> formDataShow(String taskID) {
         Task task = taskRuntime.task(taskID);
+
 /*  ------------------------------------------------------------------------------
             FormProperty_0ueitp2--__!!类型--__!!名称--__!!是否参数--__!!默认值
             例子：
@@ -89,6 +91,7 @@ public class ActTaskServiceImpl implements IActTaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int formDataSave(String taskID, List<ActWorkflowFormDataDTO> awfs) throws ParseException {
         Task task = taskRuntime.task(taskID);
         ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
@@ -119,8 +122,11 @@ public class ActTaskServiceImpl implements IActTaskService {
                     .build());
         }
 
+        //更新工作流表
+
+
 
         //写入数据库
-        return actWorkflowFormDataService.insertActWorkflowFormDatas(acwfds);
+        return acwfds.size()>0?actWorkflowFormDataService.insertActWorkflowFormDatas(acwfds):1;
     }
 }
