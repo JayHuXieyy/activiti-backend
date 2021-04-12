@@ -142,7 +142,7 @@ public class BizTerminalServiceImpl implements BizTerminalService {
         LambdaQueryWrapper<CatalogTable> parentQueryWrapper = Wrappers.lambdaQuery();
         parentQueryWrapper.eq(CatalogTable::getModuleId, moduleId)
                 .eq(CatalogTable::getPageType, Constants.status_0)
-                .eq(CatalogTable::getParentId, null)
+                .isNull(CatalogTable::getParentId)
                 .eq(CatalogTable::getDelFlag, Constants.status_0)
                 .orderByAsc(CatalogTable::getSort);
         List<CatalogTable> parents = catalogTableService.list(parentQueryWrapper);
@@ -150,8 +150,8 @@ public class BizTerminalServiceImpl implements BizTerminalService {
         LambdaQueryWrapper<CatalogTable> childQueryWrapper = Wrappers.lambdaQuery();
         LambdaQueryWrapper<ArticleTable> articleQueryWrapper = Wrappers.lambdaQuery();
         for (CatalogTable item : parents) {
-            //父类转子类
-            CatalogArticleDto catalogArticleDto = (CatalogArticleDto) item;
+            CatalogArticleDto catalogArticleDto = new CatalogArticleDto();
+            BeanUtils.copyProperties(item,catalogArticleDto);
             //获取父目录文章(动态目录独有)
             articleQueryWrapper.eq(ArticleTable::getCatalogId, item.getId());
             List<ArticleTable> parentArticles = articleTableService.list(articleQueryWrapper);
@@ -192,7 +192,7 @@ public class BizTerminalServiceImpl implements BizTerminalService {
         LambdaQueryWrapper<CatalogTable> parentQueryWrapper = Wrappers.lambdaQuery();
         parentQueryWrapper.eq(CatalogTable::getModuleId, moduleId)
                 .eq(CatalogTable::getPageType, Constants.status_0)
-                .eq(CatalogTable::getParentId, null)
+                .isNull(CatalogTable::getParentId)
                 .eq(CatalogTable::getDelFlag, Constants.status_0)
                 .orderByAsc(CatalogTable::getSort);
         List<CatalogTable> parents = catalogTableService.list(parentQueryWrapper);
@@ -200,8 +200,8 @@ public class BizTerminalServiceImpl implements BizTerminalService {
         LambdaQueryWrapper<CatalogTable> childQueryWrapper = Wrappers.lambdaQuery();
         LambdaQueryWrapper<ArticleTable> articleQueryWrapper = Wrappers.lambdaQuery();
         for (CatalogTable item : parents) {
-            //父类转子类
-            CatalogArticlePageDto catalogArticlePageDto = (CatalogArticlePageDto) item;
+            CatalogArticlePageDto catalogArticlePageDto = new CatalogArticlePageDto();
+            BeanUtils.copyProperties(item,catalogArticlePageDto);
             //获取子目录
             List<CatalogTable> childsData;
             List<CatalogArticlePageDto> townVillageChilds = new ArrayList<>();

@@ -70,7 +70,7 @@ public class ArticleTableServiceImpl extends ServiceImpl
                 parentQueryWrapper.in(CatalogTable::getType, 2, 3);
             }
         }
-        parentQueryWrapper.eq(CatalogTable::getParentId, null)
+        parentQueryWrapper.isNull(CatalogTable::getParentId)
                 .eq(CatalogTable::getDelFlag, Constants.status_0)
                 .orderByAsc(CatalogTable::getSort);
         List<CatalogTable> parents = catalogTableService.list(parentQueryWrapper);
@@ -78,13 +78,13 @@ public class ArticleTableServiceImpl extends ServiceImpl
         LambdaQueryWrapper<CatalogTable> childQueryWrapper = Wrappers.lambdaQuery();
         LambdaQueryWrapper<ArticleTable> articleQueryWrapper = Wrappers.lambdaQuery();
         for (CatalogTable item : parents) {
-            //父类转子类
-            CatalogArticleDto catalogArticleDto = (CatalogArticleDto) item;
+            CatalogArticleDto catalogArticleDto = new CatalogArticleDto();
+            BeanUtils.copyProperties(item, catalogArticleDto);
             List<CatalogTable> childsData;
             //子目录
             List<CatalogArticleDto> childs = new ArrayList<>();
             //获取父目录文章(只有动态目录才有)
-            if (queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()).equals("0")) {
+            if (queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()) != null && queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()).equals("0")) {
                 articleQueryWrapper.eq(ArticleTable::getCatalogId, item.getId());
                 List<ArticleTable> parentArticles = mapper.selectList(articleQueryWrapper);
                 catalogArticleDto.setArticleTables(parentArticles);
@@ -102,13 +102,13 @@ public class ArticleTableServiceImpl extends ServiceImpl
                 //将元素转化为子类
                 for (CatalogTable catalogTable : childsData) {
                     CatalogArticleDto childDto = new CatalogArticleDto();
-                    BeanUtils.copyProperties(catalogTable,childDto);
+                    BeanUtils.copyProperties(catalogTable, childDto);
                     //获取子目录文章
                     articleQueryWrapper.eq(ArticleTable::getCatalogId, catalogTable.getId())
                             .eq(ArticleTable::getDelFlag, Constants.status_0);
-                    if (queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()).equals("1")) {
+                    if (queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()) != null && queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()).equals("1")) {
                         //如果为非动态目录，需要筛选组织id
-                        articleQueryWrapper.eq(ArticleTable::getOrganizationId,queryDto.getSearchValue().get(SearchQueryEnum.ORGANIZATION_ID.getValue()));
+                        articleQueryWrapper.eq(ArticleTable::getOrganizationId, queryDto.getSearchValue().get(SearchQueryEnum.ORGANIZATION_ID.getValue()));
                     }
                     childArticles = mapper.selectList(articleQueryWrapper);
                     childDto.setArticleTables(childArticles);
@@ -126,9 +126,9 @@ public class ArticleTableServiceImpl extends ServiceImpl
 
     @Override
     public Boolean launch(String id) {
-        LambdaUpdateWrapper<ArticleTable> updateWrapper=Wrappers.lambdaUpdate();
-        updateWrapper.set(ArticleTable::getId,id)
-                .set(ArticleTable::getActivitiStatus,Constants.status_1);
+        LambdaUpdateWrapper<ArticleTable> updateWrapper = Wrappers.lambdaUpdate();
+        updateWrapper.set(ArticleTable::getId, id)
+                .set(ArticleTable::getActivitiStatus, Constants.status_1);
         return this.update(updateWrapper);
     }
 }
