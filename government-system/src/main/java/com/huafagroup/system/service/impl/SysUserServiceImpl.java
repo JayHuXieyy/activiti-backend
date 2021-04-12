@@ -2,6 +2,7 @@ package com.huafagroup.system.service.impl;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -363,7 +364,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return 结果
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, ParamException.class})
     public int updateUser(SysUser user) {
         SysDept sysDept = sysDeptService.getById(user.getDeptId());
         Boolean flag = false;//判断roles是否含有审批负责人的标识
@@ -379,14 +380,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     //修改后的信息包含审批负责人角色
                     flag = true;
                     //判断是否已存在审批负责人且被修改用户是否为审批负责人
-                    if (sysDept.getDeptId() != null && !sysDept.getDeptId().equals(user.getUserName())) {
+                    if (sysDept.getActivitiLeader() != null && !sysDept.getActivitiLeader().equals(user.getUserName())) {
                         throw new ParamException("当前部门已存在审批负责人");
+                    } else if (sysDept.getActivitiLeader() == null) {
+                        //将部门审批负责人设置为被修改用户
+                        LambdaUpdateWrapper<SysDept> updateWrapper = Wrappers.lambdaUpdate();
+                        updateWrapper.eq(SysDept::getDeptId, sysDept.getDeptId())
+                                .set(SysDept::getActivitiLeader, user.getUserName());
+                        sysDeptService.update(updateWrapper);
                     }
                     break;
                 }
             }
         }
-        if (sysDept.getDeptId().equals(user.getUserName()) && !flag) {
+        if (sysDept.getActivitiLeader() != null && sysDept.getActivitiLeader().equals(user.getUserName()) && !flag) {
             //被修改后用户失去审批负责人角色同步修改部门表
             LambdaUpdateWrapper<SysDept> updateWrapper = Wrappers.lambdaUpdate();
             updateWrapper.eq(SysDept::getDeptId, sysDept.getDeptId())
@@ -404,6 +411,38 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 新增用户与岗位管理
         insertUserPost(user);
         return userMapper.updateUser(user);
+    }
+
+    /**
+     * 删除用户信息
+     *
+     * @param userIds 用户id
+     * @return 结果
+     */
+    @Override
+    @Transactional
+    public int removeUser(Long[] userIds) {
+        for (Long userId : userIds) {
+            SysUser user = userMapper.selectUserById(userId);
+            //若用户为审批负责人则执行清除
+            SysDept sysDept = sysDeptService.getById(user.getDeptId());
+            if (sysDept.getActivitiLeader() != null && sysDept.getActivitiLeader().equals(user.getUserName())) {
+                LambdaUpdateWrapper<SysDept> updateWrapper = Wrappers.lambdaUpdate();
+                updateWrapper.eq(SysDept::getDeptId, sysDept.getDeptId())
+                        .set(SysDept::getActivitiLeader, null);
+                sysDeptService.update(updateWrapper);
+            }
+        }
+        LambdaQueryWrapper<SysUserRole> userRoleLambdaQueryWrapper = Wrappers.lambdaQuery();
+        userRoleLambdaQueryWrapper.in(SysUserRole::getUserId, userIds);
+        userRoleMapper.delete(userRoleLambdaQueryWrapper);
+        LambdaQueryWrapper<SysUserPost> userPostLambdaQueryWrapper = Wrappers.lambdaQuery();
+        userPostLambdaQueryWrapper.in(SysUserPost::getUserId, userIds);
+        userPostMapper.delete(userPostLambdaQueryWrapper);
+
+        LambdaQueryWrapper<SysUser> userLambdaQueryWrapper = Wrappers.lambdaQuery();
+        userLambdaQueryWrapper.in(SysUser::getUserId,userIds);
+        return userMapper.delete(userLambdaQueryWrapper);
     }
 
     /**

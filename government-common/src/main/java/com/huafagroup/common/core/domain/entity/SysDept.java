@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.huafagroup.common.core.domain.BaseEntity;
@@ -22,6 +23,7 @@ public class SysDept extends BaseEntity {
     /**
      * 部门ID
      */
+    @TableId
     private Long deptId;
 
     /**

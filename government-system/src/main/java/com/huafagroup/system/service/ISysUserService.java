@@ -137,6 +137,14 @@ public interface ISysUserService extends IService<SysUser> {
     public int updateUser(SysUser user);
 
     /**
+     * 删除用户信息
+     *
+     * @param user 用户信息
+     * @return 结果
+     */
+    public int removeUser(Long[] userIds);
+
+    /**
      * 修改用户状态
      *
      * @param user 用户信息

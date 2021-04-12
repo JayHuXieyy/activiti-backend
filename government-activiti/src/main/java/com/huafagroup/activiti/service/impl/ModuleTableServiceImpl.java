@@ -9,6 +9,7 @@ import com.huafagroup.activiti.entity.ModuleTable;
 import com.huafagroup.activiti.entity.OrganizationTable;
 import com.huafagroup.activiti.mapper.ModuleTableMapper;
 import com.huafagroup.activiti.service.ModuleTableService;
+import com.huafagroup.common.core.domain.entity.SysDept;
 import com.huafagroup.common.utils.QueryDto;
 import com.huafagroup.common.utils.SearchQueryEnum;
 import com.huafagroup.system.mapper.SysDeptMapper;
@@ -43,24 +44,27 @@ public class ModuleTableServiceImpl extends ServiceImpl
 
     @Override
     public List<ModuleTableDto> findPageList(QueryDto queryDto) throws ParseException {
-        LambdaQueryWrapper<ModuleTable> queryWrapper= Wrappers.lambdaQuery();
+        LambdaQueryWrapper<ModuleTable> queryWrapper = Wrappers.lambdaQuery();
         // 名称查询
         if (queryDto.getSearchValue().get(SearchQueryEnum.TITLE.getValue()) != null) {
-            queryWrapper.like(ModuleTable::getTitle,queryDto.getSearchValue().get(SearchQueryEnum.TITLE.getValue()));
+            queryWrapper.like(ModuleTable::getTitle, queryDto.getSearchValue().get(SearchQueryEnum.TITLE.getValue()));
         }
         // 页面类型查询
         if (queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()) != null) {
-            queryWrapper.eq(ModuleTable::getPageType,queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()));
+            queryWrapper.eq(ModuleTable::getPageType, queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()));
         }
         queryWrapper.orderByAsc(ModuleTable::getSort);
-        List<ModuleTable> moduleTableList=mapper.selectList(queryWrapper);
-        List<ModuleTableDto> moduleTableDtos=new ArrayList<>();
-
-        for (ModuleTable item:moduleTableList){
-            ModuleTableDto moduleTableDto=new ModuleTableDto();
-            BeanUtils.copyProperties(item,moduleTableDto);
-            if(item.getDeptId()!=null){
-                moduleTableDto.setDeptName(sysDeptService.getById(item.getDeptId()).getDeptName());
+        List<ModuleTable> moduleTableList = mapper.selectList(queryWrapper);
+        List<ModuleTableDto> moduleTableDtos = new ArrayList<>();
+        SysDept sysDept = null;
+        for (ModuleTable item : moduleTableList) {
+            ModuleTableDto moduleTableDto = new ModuleTableDto();
+            BeanUtils.copyProperties(item, moduleTableDto);
+            if (item.getDeptId() != null) {
+                sysDept = sysDeptService.getById(item.getDeptId());
+                if (sysDept != null) {
+                    moduleTableDto.setDeptName(sysDept.getDeptName());
+                }
             }
             moduleTableDtos.add(moduleTableDto);
         }

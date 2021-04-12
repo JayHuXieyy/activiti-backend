@@ -164,7 +164,7 @@ public class SysUserController extends BaseController {
     @Log(title = "用户管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userIds}")
     public AjaxResult remove(@PathVariable Long[] userIds) {
-        return null;
+        return toAjax(userService.removeUser(userIds));
     }
 
     /**
