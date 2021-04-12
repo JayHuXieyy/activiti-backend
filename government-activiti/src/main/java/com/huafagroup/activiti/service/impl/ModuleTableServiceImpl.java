@@ -57,8 +57,11 @@ public class ModuleTableServiceImpl extends ServiceImpl
         List<ModuleTableDto> moduleTableDtos=new ArrayList<>();
 
         for (ModuleTable item:moduleTableList){
-            ModuleTableDto moduleTableDto=(ModuleTableDto)item;
-            moduleTableDto.setDeptName(sysDeptService.getById(item.getDeptId()).getDeptName());
+            ModuleTableDto moduleTableDto=new ModuleTableDto();
+            BeanUtils.copyProperties(item,moduleTableDto);
+            if(item.getDeptId()!=null){
+                moduleTableDto.setDeptName(sysDeptService.getById(item.getDeptId()).getDeptName());
+            }
             moduleTableDtos.add(moduleTableDto);
         }
 

@@ -101,7 +101,8 @@ public class ArticleTableServiceImpl extends ServiceImpl
             if (childsData != null) {
                 //将元素转化为子类
                 for (CatalogTable catalogTable : childsData) {
-                    CatalogArticleDto childDto = (CatalogArticleDto) catalogTable;
+                    CatalogArticleDto childDto = new CatalogArticleDto();
+                    BeanUtils.copyProperties(catalogTable,childDto);
                     //获取子目录文章
                     articleQueryWrapper.eq(ArticleTable::getCatalogId, catalogTable.getId())
                             .eq(ArticleTable::getDelFlag, Constants.status_0);

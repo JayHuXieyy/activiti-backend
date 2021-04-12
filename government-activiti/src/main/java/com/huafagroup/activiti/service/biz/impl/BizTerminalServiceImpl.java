@@ -25,6 +25,7 @@ import com.huafagroup.common.utils.SearchQueryEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -90,27 +91,27 @@ public class BizTerminalServiceImpl implements BizTerminalService {
 
     @Override
     public BizTerminalArticleDto info(QueryDto queryDto) {
-        BizTerminalArticleDto bizTerminalArticleDto ;
-        Long moduleId=Long.valueOf(Long.valueOf(queryDto.getSearchValue().get(SearchQueryEnum.MODULE_ID.getValue()).toString()));
-        Object organizationIdObject=queryDto.getSearchValue().get(SearchQueryEnum.ORGANIZATION_ID.getValue());
+        BizTerminalArticleDto bizTerminalArticleDto;
+        Long moduleId = Long.valueOf(Long.valueOf(queryDto.getSearchValue().get(SearchQueryEnum.MODULE_ID.getValue()).toString()));
+        Object organizationIdObject = queryDto.getSearchValue().get(SearchQueryEnum.ORGANIZATION_ID.getValue());
         // 页面类型查询
-        if (queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()) .equals(ModulePageTypeEnum.PARTY.getValue())) {
+        if (queryDto.getSearchValue().get(SearchQueryEnum.PAGE_TYPE.getValue()).equals(ModulePageTypeEnum.PARTY.getValue())) {
             //党组织模块
             // 根据组织id判断页面
             if (organizationIdObject == null) {
                 //模块详细
-                bizTerminalArticleDto=this.moduleInfo(moduleId);
+                bizTerminalArticleDto = this.moduleInfo(moduleId);
                 bizTerminalArticleDto.setDynamics(this.dynamics(moduleId));
-            }else {
+            } else {
                 //镇村详细
-                Long organizationId=Long.valueOf(organizationIdObject.toString());
-                bizTerminalArticleDto=this.townVillageInfo(organizationId);
-                bizTerminalArticleDto.setArticles(this.articles(moduleId,organizationId,queryDto.getPageNo(),queryDto.getPageSize()));
+                Long organizationId = Long.valueOf(organizationIdObject.toString());
+                bizTerminalArticleDto = this.townVillageInfo(organizationId);
+                bizTerminalArticleDto.setArticles(this.articles(moduleId, organizationId, queryDto.getPageNo(), queryDto.getPageSize()));
             }
-        }else {
-            bizTerminalArticleDto=this.moduleInfo(moduleId);
+        } else {
+            bizTerminalArticleDto = this.moduleInfo(moduleId);
             bizTerminalArticleDto.setDynamics(this.dynamics(moduleId));
-            bizTerminalArticleDto.setArticles(this.articles(moduleId,null,queryDto.getPageNo(),queryDto.getPageSize()));
+            bizTerminalArticleDto.setArticles(this.articles(moduleId, null, queryDto.getPageNo(), queryDto.getPageSize()));
         }
 
 
@@ -118,7 +119,7 @@ public class BizTerminalServiceImpl implements BizTerminalService {
     }
 
     /*模块详细*/
-    private BizTerminalArticleDto moduleInfo(Long moduleId){
+    private BizTerminalArticleDto moduleInfo(Long moduleId) {
         ModuleTable moduleTable = moduleTableService.getById(moduleId);
         BizTerminalArticleDto bizTerminalModuleDto = new BizTerminalArticleDto();
         bizTerminalModuleDto.setModuleTable(moduleTable);
@@ -127,7 +128,7 @@ public class BizTerminalServiceImpl implements BizTerminalService {
     }
 
     /*镇村详细*/
-    private BizTerminalArticleDto townVillageInfo(Long organizationId){
+    private BizTerminalArticleDto townVillageInfo(Long organizationId) {
         OrganizationTable organizationTable = organizationTableService.getById(organizationId);
         BizTerminalArticleDto bizTerminalModuleDto = new BizTerminalArticleDto();
         bizTerminalModuleDto.setOrganizationTable(organizationTable);
@@ -136,13 +137,13 @@ public class BizTerminalServiceImpl implements BizTerminalService {
     }
 
     /*动态目录和文章*/
-    private List<CatalogArticleDto> dynamics(Long moduleId){
+    private List<CatalogArticleDto> dynamics(Long moduleId) {
         //获取父目录
         LambdaQueryWrapper<CatalogTable> parentQueryWrapper = Wrappers.lambdaQuery();
         parentQueryWrapper.eq(CatalogTable::getModuleId, moduleId)
-                .eq(CatalogTable::getPageType,Constants.status_0)
+                .eq(CatalogTable::getPageType, Constants.status_0)
                 .eq(CatalogTable::getParentId, null)
-                .eq(CatalogTable::getDelFlag,Constants.status_0)
+                .eq(CatalogTable::getDelFlag, Constants.status_0)
                 .orderByAsc(CatalogTable::getSort);
         List<CatalogTable> parents = catalogTableService.list(parentQueryWrapper);
         List<CatalogArticleDto> catalogArticleDtos = new ArrayList<>();
@@ -160,13 +161,14 @@ public class BizTerminalServiceImpl implements BizTerminalService {
             List<CatalogTable> childsData;
             List<CatalogArticleDto> dynamicsChilds = new ArrayList<>();
             childQueryWrapper.eq(CatalogTable::getParentId, item.getId())
-                    .eq(CatalogTable::getDelFlag,Constants.status_0)
+                    .eq(CatalogTable::getDelFlag, Constants.status_0)
                     .orderByAsc(CatalogTable::getSort);
             childsData = catalogTableService.list(childQueryWrapper);
             if (childsData != null) {
                 //将元素转化为子类
                 for (CatalogTable catalogTable : childsData) {
-                    CatalogArticleDto childDto = (CatalogArticleDto) catalogTable;
+                    CatalogArticleDto childDto = new CatalogArticleDto();
+                    BeanUtils.copyProperties(catalogTable, childDto);
                     //获取子目录文章
                     articleQueryWrapper.eq(ArticleTable::getCatalogId, catalogTable.getId())
                             .eq(ArticleTable::getDelFlag, Constants.status_0);
@@ -185,13 +187,13 @@ public class BizTerminalServiceImpl implements BizTerminalService {
     }
 
     /*内容目录和文章*/
-    private List<CatalogArticlePageDto> articles(Long moduleId, Long organizationId, int pageNo, int pageSize){
+    private List<CatalogArticlePageDto> articles(Long moduleId, Long organizationId, int pageNo, int pageSize) {
         //获取父目录
         LambdaQueryWrapper<CatalogTable> parentQueryWrapper = Wrappers.lambdaQuery();
         parentQueryWrapper.eq(CatalogTable::getModuleId, moduleId)
-                .eq(CatalogTable::getPageType,Constants.status_0)
+                .eq(CatalogTable::getPageType, Constants.status_0)
                 .eq(CatalogTable::getParentId, null)
-                .eq(CatalogTable::getDelFlag,Constants.status_0)
+                .eq(CatalogTable::getDelFlag, Constants.status_0)
                 .orderByAsc(CatalogTable::getSort);
         List<CatalogTable> parents = catalogTableService.list(parentQueryWrapper);
         List<CatalogArticlePageDto> catalogArticlePageDtos = new ArrayList<>();
@@ -204,18 +206,19 @@ public class BizTerminalServiceImpl implements BizTerminalService {
             List<CatalogTable> childsData;
             List<CatalogArticlePageDto> townVillageChilds = new ArrayList<>();
             childQueryWrapper.eq(CatalogTable::getParentId, item.getId())
-                    .eq(CatalogTable::getDelFlag,Constants.status_0)
+                    .eq(CatalogTable::getDelFlag, Constants.status_0)
                     .orderByAsc(CatalogTable::getSort);
             childsData = catalogTableService.list(childQueryWrapper);
             if (childsData != null) {
                 //将元素转化为子类
                 for (CatalogTable catalogTable : childsData) {
-                    CatalogArticlePageDto childDto = (CatalogArticlePageDto) catalogTable;
+                    CatalogArticlePageDto childDto = new CatalogArticlePageDto();
+                    BeanUtils.copyProperties(catalogTable, childDto);
                     //获取子目录文章
                     articleQueryWrapper.eq(ArticleTable::getCatalogId, catalogTable.getId())
                             .eq(ArticleTable::getDelFlag, Constants.status_0);
-                    if(organizationId!=null){
-                        articleQueryWrapper.eq(ArticleTable::getOrganizationId,organizationId);
+                    if (organizationId != null) {
+                        articleQueryWrapper.eq(ArticleTable::getOrganizationId, organizationId);
                     }
                     Page<ArticleTable> childArticles = articleTableService.page(new Page<>(pageNo, pageSize), articleQueryWrapper);
                     childDto.setArticleTables(childArticles);
@@ -233,9 +236,9 @@ public class BizTerminalServiceImpl implements BizTerminalService {
 
     @Override
     public Page<OrganizationTable> getAllTown(QueryDto queryDto) {
-        LambdaQueryWrapper<OrganizationTable> queryWrapper=Wrappers.lambdaQuery();
-        queryWrapper.eq(OrganizationTable::getRank,1)
-                .eq(OrganizationTable::getDelFlag,Constants.status_0)
+        LambdaQueryWrapper<OrganizationTable> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(OrganizationTable::getRank, 1)
+                .eq(OrganizationTable::getDelFlag, Constants.status_0)
                 .orderByAsc(OrganizationTable::getSort);
         Page<OrganizationTable> towns = organizationTableService.page(new Page<>(queryDto.getPageNo(), queryDto.getPageSize()), queryWrapper);
         return towns;
@@ -243,10 +246,10 @@ public class BizTerminalServiceImpl implements BizTerminalService {
 
     @Override
     public Page<OrganizationTable> getVillageByTown(QueryDto queryDto) {
-        LambdaQueryWrapper<OrganizationTable> queryWrapper=Wrappers.lambdaQuery();
-        queryWrapper.eq(OrganizationTable::getRank,1)
-                .eq(OrganizationTable::getParentId,queryDto.getSearchValue().get(SearchQueryEnum.ORGANIZATION_ID.getValue()))
-                .eq(OrganizationTable::getDelFlag,Constants.status_0)
+        LambdaQueryWrapper<OrganizationTable> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(OrganizationTable::getRank, 1)
+                .eq(OrganizationTable::getParentId, queryDto.getSearchValue().get(SearchQueryEnum.ORGANIZATION_ID.getValue()))
+                .eq(OrganizationTable::getDelFlag, Constants.status_0)
                 .orderByAsc(OrganizationTable::getSort);
         Page<OrganizationTable> villages = organizationTableService.page(new Page<>(queryDto.getPageNo(), queryDto.getPageSize()), queryWrapper);
         return villages;

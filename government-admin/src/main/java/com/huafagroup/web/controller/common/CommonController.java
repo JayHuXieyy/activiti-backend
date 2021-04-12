@@ -3,6 +3,10 @@ package com.huafagroup.web.controller.common;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.huafagroup.activiti.domain.dto.OrganizationNotCountryDto;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +27,7 @@ import com.huafagroup.framework.config.ServerConfig;
  *
  * @author huafagroup
  */
+@Api(tags = "通用接口")
 @RestController
 public class CommonController {
     private static final Logger log = LoggerFactory.getLogger(CommonController.class);
@@ -61,6 +66,8 @@ public class CommonController {
     /**
      * 通用上传请求
      */
+    @ApiOperation("通用上传请求")
+    @ApiResponse(code = 200,message = "ok", response = MultipartFile.class)
     @PostMapping("/common/upload")
     public AjaxResult uploadFile(MultipartFile file) throws Exception {
         try {

@@ -54,7 +54,8 @@ public class CatalogTableServiceImpl extends ServiceImpl
         LambdaQueryWrapper<CatalogTable> childQueryWrapper= Wrappers.lambdaQuery();
         for (CatalogTable item:parents){
             List<CatalogTable> childs;
-            CatalogTableDto catalogTableDto=(CatalogTableDto)item;
+            CatalogTableDto catalogTableDto=new CatalogTableDto();
+            BeanUtils.copyProperties(item,catalogTableDto);
             childQueryWrapper.eq(CatalogTable::getParentId,item.getId())
                     .orderByAsc(CatalogTable::getSort);
             childs=mapper.selectList(childQueryWrapper);

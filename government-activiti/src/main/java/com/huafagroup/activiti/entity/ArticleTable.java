@@ -2,6 +2,8 @@ package com.huafagroup.activiti.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.huafagroup.activiti.utils.JsonLongSerializer;
 import com.huafagroup.common.core.domain.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -23,7 +25,7 @@ public class ArticleTable extends BaseEntity {
 
     @ApiModelProperty(value = "主键Id")
     @TableId
-
+    @JsonSerialize(using = JsonLongSerializer.class )
     private Long id;
 
     /**
