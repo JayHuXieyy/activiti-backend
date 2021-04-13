@@ -86,6 +86,33 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return userMapper.selectUserList(user);
     }
 
+    /**
+     * 根据条件分页查询用户列表
+     *
+     * @param sysUserDto 用户信息
+     * @return 用户信息集合信息
+     */
+    @Override
+    @DataScope(deptAlias = "d", userAlias = "u")
+    public List<SysUserDto> selectUserDtoList(SysUserDto sysUserDto) {
+        List<SysUserDto> sysUserDtos=userMapper.selectUserDtoList(sysUserDto);
+        List<Integer> roleIds;
+        List<SysRole> roles;
+        LambdaQueryWrapper<SysRole> roleQuery = Wrappers.lambdaQuery();
+        for(SysUserDto item:sysUserDtos){
+            //获取角色id
+            roleIds = roleMapper.selectRoleListByUserId(item.getUserId());
+            //获取角色
+            if (roleIds.size() > 0) {
+                roleQuery.in(SysRole::getRoleId, roleIds);
+                roles = roleMapper.selectList(roleQuery);
+                item.setRoleList(roles);
+            }
+            roleQuery.clear();
+        }
+        return sysUserDtos;
+    }
+
     @Override
     public Page<SysUserDto> findPageList(QueryDto queryDto) throws ParseException {
         Page<SysUserDto> page = new Page<>();
@@ -340,7 +367,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                         //新增用户为审批负责人角色同步修改部门表
                         LambdaUpdateWrapper<SysDept> updateWrapper = Wrappers.lambdaUpdate();
                         updateWrapper.eq(SysDept::getDeptId, sysDept.getDeptId())
-                                .set(SysDept::getActivitiLeader, user.getUserName());
+                                .set(SysDept::getActivitiLeader, user.getNickName());
                         sysDeptService.update(updateWrapper);
                     }
                     break;
@@ -380,20 +407,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     //修改后的信息包含审批负责人角色
                     flag = true;
                     //判断是否已存在审批负责人且被修改用户是否为审批负责人
-                    if (sysDept.getActivitiLeader() != null && !sysDept.getActivitiLeader().equals(user.getUserName())) {
+                    if (sysDept.getActivitiLeader() != null && !sysDept.getActivitiLeader().equals(user.getNickName())) {
                         throw new ParamException("当前部门已存在审批负责人");
                     } else if (sysDept.getActivitiLeader() == null) {
                         //将部门审批负责人设置为被修改用户
                         LambdaUpdateWrapper<SysDept> updateWrapper = Wrappers.lambdaUpdate();
                         updateWrapper.eq(SysDept::getDeptId, sysDept.getDeptId())
-                                .set(SysDept::getActivitiLeader, user.getUserName());
+                                .set(SysDept::getActivitiLeader, user.getNickName());
                         sysDeptService.update(updateWrapper);
                     }
                     break;
                 }
             }
         }
-        if (sysDept.getActivitiLeader() != null && sysDept.getActivitiLeader().equals(user.getUserName()) && !flag) {
+        if (sysDept.getActivitiLeader() != null && sysDept.getActivitiLeader().equals(user.getNickName()) && !flag) {
             //被修改后用户失去审批负责人角色同步修改部门表
             LambdaUpdateWrapper<SysDept> updateWrapper = Wrappers.lambdaUpdate();
             updateWrapper.eq(SysDept::getDeptId, sysDept.getDeptId())
@@ -426,7 +453,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             SysUser user = userMapper.selectUserById(userId);
             //若用户为审批负责人则执行清除
             SysDept sysDept = sysDeptService.getById(user.getDeptId());
-            if (sysDept.getActivitiLeader() != null && sysDept.getActivitiLeader().equals(user.getUserName())) {
+            if (sysDept.getActivitiLeader() != null && sysDept.getActivitiLeader().equals(user.getNickName())) {
                 LambdaUpdateWrapper<SysDept> updateWrapper = Wrappers.lambdaUpdate();
                 updateWrapper.eq(SysDept::getDeptId, sysDept.getDeptId())
                         .set(SysDept::getActivitiLeader, null);

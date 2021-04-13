@@ -23,6 +23,13 @@ public interface ISysUserService extends IService<SysUser> {
      */
     public List<SysUser> selectUserList(SysUser user);
 
+    /**
+     * 根据条件分页查询用户列表
+     *
+     * @param user 用户信息
+     * @return 用户信息集合信息
+     */
+    public List<SysUserDto> selectUserDtoList(SysUserDto sysUserDto);
 
     /**
      * 管理后台查询列表

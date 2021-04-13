@@ -32,8 +32,7 @@ public class OrganizationTable extends BaseEntity {
      * 上级组织id
      */
     @ApiModelProperty(value = "上级组织id")
-
-
+    @JsonSerialize(using = JsonLongSerializer.class )
     private Long parentId;
     /**
      * 备注

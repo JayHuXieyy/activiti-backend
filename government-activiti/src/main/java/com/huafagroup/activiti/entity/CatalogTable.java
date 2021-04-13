@@ -78,7 +78,7 @@ public class CatalogTable extends BaseEntity {
      */
     @ApiModelProperty(value = "父目录id")
 
-
+    @JsonSerialize(using = JsonLongSerializer.class )
     private Long parentId;
     /**
      * 简介

@@ -13,6 +13,16 @@ import java.util.List;
 public class SysUserDto extends SysUser {
     private List<SysRole> roleList;
 
+    private Long roleId;
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
+
     public List<SysRole> getRoleList() {
         return roleList;
     }

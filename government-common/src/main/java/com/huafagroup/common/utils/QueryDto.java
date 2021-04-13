@@ -1,5 +1,6 @@
 package com.huafagroup.common.utils;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -44,6 +45,11 @@ public class QueryDto implements Serializable {
     @ApiModelProperty(value = "结束时间")
     private String endDate;
 
+    /**
+     * 请求参数
+     */
+    private Map<String, Object> params;
+
     public QueryDto() {
         searchValue = new HashMap<String, Object>();
     }
@@ -65,6 +71,17 @@ public class QueryDto implements Serializable {
         } else {
             return 0;
         }
+    }
+
+    public Map<String, Object> getParams() {
+        if (params == null) {
+            params = new HashMap<>();
+        }
+        return params;
+    }
+
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
     }
 
     public void setPageNo(int pageNo) {

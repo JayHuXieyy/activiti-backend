@@ -3,7 +3,9 @@ package com.huafagroup.web.controller.system;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.huafagroup.activiti.entity.ArticleTable;
 import com.huafagroup.common.utils.QueryDto;
+import com.huafagroup.system.domain.dto.SysUserDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -55,19 +57,21 @@ public class SysUserController extends BaseController {
     /**
      * 获取用户列表
      */
+    @ApiOperation(value = "管理后台查询列表")
     @PreAuthorize("@ss.hasPermi('system:user:list')")
+    @ApiResponse(code = 200, message = "ok", response = SysUserDto.class,responseContainer = "List")
     @GetMapping("/list")
-    public TableDataInfo list(SysUser user) {
+    public TableDataInfo list(SysUserDto sysUserDto) {
         startPage();
-        List<SysUser> list = userService.selectUserList(user);
+        List<SysUserDto> list = userService.selectUserDtoList(sysUserDto);
         return getDataTable(list);
     }
 
-    @ApiOperation(value = "管理后台查询列表")
+/*    @ApiOperation(value = "管理后台查询列表")
     @RequestMapping(value = "/findpagelist", method = RequestMethod.POST)
     public AjaxResult findPageList(@RequestBody @Validated QueryDto queryDto) throws Exception {
         return AjaxResult.success(userService.findPageList(queryDto));
-    }
+    }*/
 
     @Log(title = "用户管理", businessType = BusinessType.EXPORT)
     @PreAuthorize("@ss.hasPermi('system:user:export')")

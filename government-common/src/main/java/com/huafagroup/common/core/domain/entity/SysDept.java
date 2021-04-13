@@ -51,7 +51,7 @@ public class SysDept extends BaseEntity {
      */
     private String leader;
     /**
-     * 负责人
+     * 负责人昵称
      */
     private String activitiLeader;
 

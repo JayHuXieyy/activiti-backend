@@ -1,5 +1,8 @@
 package com.huafagroup.leave.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.huafagroup.common.core.domain.entity.SysRole;
 import com.huafagroup.common.utils.DateUtils;
 import com.huafagroup.common.utils.SecurityUtils;
 import com.huafagroup.common.utils.StringUtils;
@@ -7,6 +10,9 @@ import com.huafagroup.common.utils.uuid.UUID;
 import com.huafagroup.leave.domain.WorkflowLeave;
 import com.huafagroup.leave.mapper.WorkflowLeaveMapper;
 import com.huafagroup.leave.service.IWorkflowLeaveService;
+import com.huafagroup.system.domain.SysUserRole;
+import com.huafagroup.system.mapper.SysUserRoleMapper;
+import com.huafagroup.system.service.ISysRoleService;
 import com.huafagroup.system.service.ISysUserService;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.process.model.builders.ProcessPayloadBuilder;
@@ -39,6 +45,10 @@ public class WorkflowLeaveServiceImpl implements IWorkflowLeaveService {
     private TaskService taskService;
     @Autowired
     private RuntimeService runtimeService;
+    @Autowired
+    private ISysRoleService roleService;
+    @Autowired
+    private SysUserRoleMapper sysUserRoleMapper;
 
     /**
      * 查询请假
@@ -97,7 +107,15 @@ public class WorkflowLeaveServiceImpl implements IWorkflowLeaveService {
         String id = UUID.randomUUID().toString();
         workflowLeave.setId(id);
         workflowLeave.setCreateTime(DateUtils.getNowDate());
+        //获取部门
+
         String join = StringUtils.join(sysUserService.selectUserNameByPostCodeAndDeptId("se", SecurityUtils.getLoginUser().getUser().getDeptId()), ",");
+/*        LambdaQueryWrapper<SysRole> roleQuery = Wrappers.lambdaQuery();
+        roleQuery.eq(SysRole::getRoleName, "审批负责人");
+        //获取审批负责人的角色实体
+        SysRole role = roleService.getOne(roleQuery);
+        List<SysUserRole> sysUserRoles
+        String join*/
         ProcessInstance processInstance = processRuntime.start(ProcessPayloadBuilder
                 .start()
                 .withProcessDefinitionKey("Process_1")

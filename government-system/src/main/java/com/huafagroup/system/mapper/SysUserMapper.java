@@ -3,6 +3,7 @@ package com.huafagroup.system.mapper;
 import java.util.List;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.huafagroup.system.domain.dto.SysUserDto;
 import org.apache.ibatis.annotations.Param;
 import com.huafagroup.common.core.domain.entity.SysUser;
 
@@ -19,6 +20,14 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @return 用户信息集合信息
      */
     public List<SysUser> selectUserList(SysUser sysUser);
+
+    /**
+     * 根据条件分页查询用户列表
+     *
+     * @param sysUserDto 用户信息
+     * @return 用户信息集合信息
+     */
+    public List<SysUserDto> selectUserDtoList(SysUserDto sysUserDto);
 
     /**
      * 通过用户名查询用户
