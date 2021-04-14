@@ -172,4 +172,14 @@ public class Constants {
      */
     public static final String SMS_REFRESH_TOKEN = "sms_refresh_token:";
 
+    /**
+     * 工作流候选人
+     * */
+    public static final String FIRST_GROUP = "firstGroup";
+    public static final String SECOND_GROUP = "secondGroup";
+
+    /**
+     * 工作流审批角色
+     */
+    public static final String ACTIVITI_USER = "ACTIVITI_USER";
 }

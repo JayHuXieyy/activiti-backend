@@ -103,12 +103,6 @@ public class SysUser extends BaseEntity {
     private String status;
 
     /**
-     * 是否审批负责人,0否1是
-     */
-    @Excel(name = "审批负责人", readConverterExp = "0=否,1=是")
-    private Integer isActiviti;
-
-    /**
      * 删除标志（0代表存在 1代表删除）
      */
     private String delFlag;
@@ -180,14 +174,6 @@ public class SysUser extends BaseEntity {
 
     public void setUserId(Long userId) {
         this.userId = userId;
-    }
-
-    public Integer getIsActiviti() {
-        return isActiviti;
-    }
-
-    public void setIsActiviti(Integer isActiviti) {
-        this.isActiviti = isActiviti;
     }
 
     public boolean isAdmin() {

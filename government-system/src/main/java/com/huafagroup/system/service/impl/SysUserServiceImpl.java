@@ -352,7 +352,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         Long[] roles = user.getRoleIds();
         if (StringUtils.isNotNull(roles)) {
             LambdaQueryWrapper<SysRole> roleQuery = Wrappers.lambdaQuery();
-            roleQuery.eq(SysRole::getRoleName, "审批负责人");
+            roleQuery.eq(SysRole::getRoleKey, Constants.ACTIVITI_USER);
             //获取审批负责人的角色实体
             SysRole role = roleMapper.selectOne(roleQuery);
             roleQuery.clear();
@@ -398,7 +398,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         Long[] roles = user.getRoleIds();
         if (StringUtils.isNotNull(roles)) {
             LambdaQueryWrapper<SysRole> roleQuery = Wrappers.lambdaQuery();
-            roleQuery.eq(SysRole::getRoleName, "审批负责人");
+            roleQuery.eq(SysRole::getRoleKey, Constants.ACTIVITI_USER);
             //获取审批负责人角色实体
             SysRole role = roleMapper.selectOne(roleQuery);
             roleQuery.clear();

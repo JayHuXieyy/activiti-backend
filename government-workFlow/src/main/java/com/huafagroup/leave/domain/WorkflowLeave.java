@@ -44,6 +44,7 @@ public class WorkflowLeave extends BaseEntity
 
 
     private String instanceId;
+    private String procdefKey;
     private String taskName;
 
     /** 状态 */
@@ -63,7 +64,16 @@ public class WorkflowLeave extends BaseEntity
     {
         return id;
     }
-    public void setType(String type) 
+
+    public String getProcdefKey() {
+        return procdefKey;
+    }
+
+    public void setProcdefKey(String procdefKey) {
+        this.procdefKey = procdefKey;
+    }
+
+    public void setType(String type)
     {
         this.type = type;
     }

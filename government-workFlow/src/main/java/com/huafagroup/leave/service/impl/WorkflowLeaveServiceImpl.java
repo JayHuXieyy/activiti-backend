@@ -2,7 +2,9 @@ package com.huafagroup.leave.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.huafagroup.common.constant.Constants;
 import com.huafagroup.common.core.domain.entity.SysRole;
+import com.huafagroup.common.core.domain.entity.SysUser;
 import com.huafagroup.common.utils.DateUtils;
 import com.huafagroup.common.utils.SecurityUtils;
 import com.huafagroup.common.utils.StringUtils;
@@ -103,32 +105,38 @@ public class WorkflowLeaveServiceImpl implements IWorkflowLeaveService {
      */
     @Override
     public int insertWorkflowLeave(WorkflowLeave workflowLeave) {
-
+        String username=SecurityUtils.getUsername();
         String id = UUID.randomUUID().toString();
         workflowLeave.setId(id);
         workflowLeave.setCreateTime(DateUtils.getNowDate());
-        //获取部门
+        //获取流程定义
 
+        //获取部门
+        SysUser sysUser=sysUserService.selectUserByUserName(username);
         String join = StringUtils.join(sysUserService.selectUserNameByPostCodeAndDeptId("se", SecurityUtils.getLoginUser().getUser().getDeptId()), ",");
-/*        LambdaQueryWrapper<SysRole> roleQuery = Wrappers.lambdaQuery();
-        roleQuery.eq(SysRole::getRoleName, "审批负责人");
         //获取审批负责人的角色实体
+/*        LambdaQueryWrapper<SysRole> roleQuery = Wrappers.lambdaQuery();
+        roleQuery.eq(SysRole::getRoleKey, Constants.ACTIVITI_USER);
         SysRole role = roleService.getOne(roleQuery);
-        List<SysUserRole> sysUserRoles
-        String join*/
+        //获取角色用户关系
+        LambdaQueryWrapper<SysUserRole> userRoleQuery = Wrappers.lambdaQuery();
+        userRoleQuery.eq(SysUserRole::getRoleId, role.getRoleId());
+        List<SysUserRole> sysUserRoles= sysUserRoleMapper.selectList(userRoleQuery);*/
+
+//        String join
         ProcessInstance processInstance = processRuntime.start(ProcessPayloadBuilder
                 .start()
                 .withProcessDefinitionKey("Process_1")
                 .withName(workflowLeave.getTitle())
                 .withBusinessKey(id)
-                //设置${deptLeader1}的值
-                .withVariable("deptLeader1",join)
-                .withVariable("deptLeader2",join)
+                //设置候选人的值
+                .withVariable(Constants.FIRST_GROUP,join)
+                .withVariable(Constants.SECOND_GROUP,join)
                 .build());
         workflowLeave.setInstanceId(processInstance.getId());
         workflowLeave.setState("0");
         workflowLeave.setCreateName(SecurityUtils.getNickName());
-        workflowLeave.setCreateBy(SecurityUtils.getUsername());
+        workflowLeave.setCreateBy(username);
         workflowLeave.setCreateTime(DateUtils.getNowDate());
         return workflowLeaveMapper.insertWorkflowLeave(workflowLeave);
     }
